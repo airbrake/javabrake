@@ -14,5 +14,15 @@ public class NotifierTest {
 
     Notice notice = notifier.reportSync(new IOException("hello from Java"));
     assertNotNull(notice.id);
+
+    assertEquals(notice.errors.size(), 1);
+    AirbrakeError err = notice.errors.get(0);
+    assertEquals(err.type, "java.io.IOException");
+    assertEquals(err.message, "hello from Java");
+
+    AirbrakeStackRecord record = err.backtrace.get(0);
+    assertEquals(record.function, "testReport");
+    assertEquals(record.file, "[PROJECT_ROOT]/javabrake/NotifierTest.class");
+    assertEquals(record.line, 15);
   }
 }

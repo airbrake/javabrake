@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import javax.annotation.Nullable;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -18,6 +19,14 @@ import com.google.gson.GsonBuilder;
 
 public class Notifier {
   static final MediaType JSONType = MediaType.parse("application/json");
+
+  static final HashMap<String, String> notifierInfo;
+  static {
+    notifierInfo = new HashMap<>();
+    notifierInfo.put("name", "javabrake");
+    notifierInfo.put("version", "0.0.1");
+    notifierInfo.put("url", "https://github.com/airbrake/javabrake");
+  }
 
   final int projectId;
   final String projectKey;
@@ -49,6 +58,13 @@ public class Notifier {
 
   public Notice buildNotice(Throwable e) {
     Notice notice = new Notice(e);
+    notice.setContext("notifier", notifierInfo);
+    String lang = "Java/" + System.getProperty("java.version");
+    notice.setContext("language", lang);
+    String os = System.getProperty("os.name") + "/" + System.getProperty("os.version");
+    notice.setContext("os", os);
+    notice.setContext("architecture", System.getProperty("os.arch"));
+    notice.setContext("rootDirectory", System.getProperty("user.dir"));
 
     for (NoticeFilter filter : this.filters) {
       notice = filter.filter(notice);

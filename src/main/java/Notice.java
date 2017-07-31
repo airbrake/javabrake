@@ -20,7 +20,10 @@ class Notice {
 
   Notice(Throwable e) {
     this.errors = new ArrayList<>();
-    this.errors.add(new AirbrakeError(e));
+    while (e != null) {
+      this.errors.add(new AirbrakeError(e));
+      e = e.getCause();
+    }
   }
 
   public Notice setContext(String key, Object value) {
