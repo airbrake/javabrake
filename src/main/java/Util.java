@@ -7,18 +7,13 @@ import java.net.URL;
 
 class Util {
   static String[] dirs = System.getProperty("java.class.path").split(":");
-  static String[] jars;
+  static String rootDir;
+
   static {
-    ArrayList<String> tmp = new ArrayList<>();
-    for (String dir : dirs) {
-      if (dir.endsWith(".jar")) {
-        // Remove jar name from the dir.
-        dir = dir.substring(0, dir.lastIndexOf("/") + 1);
-        tmp.add(dir);
-      }
+    for (int i = 0; i < dirs.length; i++) {
+      String dir = dirs[i];
+      dirs[i] = dir.substring(0, dir.lastIndexOf("/") + 1);
     }
-    jars = new String[tmp.size()];
-    jars = tmp.toArray(jars);
   }
 
   static String getFilepath(String className) {
@@ -46,16 +41,13 @@ class Util {
 
     String filepath = url.toString();
 
-    boolean isJar = filepath.startsWith("jar:");
-    if (isJar) {
-      filepath = Util.trimLeft(filepath, "jar:");
-    }
+    filepath = Util.trimLeft(filepath, "jar:");
     filepath = Util.trimLeft(filepath, "file:");
 
-    if (isJar) {
-      filepath = Util.trimDirs(filepath, "", Util.jars);
+    if (Util.rootDir != null && filepath.startsWith(Util.rootDir)) {
+      filepath = filepath.replace(Util.rootDir, "[PROJECT_ROOT]/");
     } else {
-      filepath = Util.trimDirs(filepath, "[PROJECT_ROOT]", Util.dirs);
+      filepath = Util.trimDirs(filepath, "", Util.dirs);
     }
 
     return filepath;

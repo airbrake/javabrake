@@ -33,6 +33,18 @@ public class Notifier {
     this.projectKey = projectKey;
   }
 
+  public Notifier setRootDirectory(String dir) {
+    if (dir != "") {
+      char ch = dir.charAt(dir.length() - 1);
+      if (ch != '/' && ch != '\\') {
+        dir += '/';
+      }
+    }
+
+    Util.rootDir = dir;
+    return this;
+  }
+
   public Notifier addFilter(NoticeFilter filter) {
     this.filters.add(filter);
     return this;
@@ -50,6 +62,9 @@ public class Notifier {
 
   public Notice buildNotice(Throwable e) {
     Notice notice = new Notice(e);
+    if (Util.rootDir != null) {
+      notice.setContext("rootDirectory", Util.rootDir);
+    }
 
     for (NoticeFilter filter : this.filters) {
       notice = filter.filter(notice);
