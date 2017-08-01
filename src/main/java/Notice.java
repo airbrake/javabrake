@@ -41,7 +41,6 @@ public class Notice {
     String os = System.getProperty("os.name") + "/" + System.getProperty("os.version");
     this.setContext("os", os);
     this.setContext("architecture", System.getProperty("os.arch"));
-    this.setContext("rootDirectory", System.getProperty("user.dir"));
 
     try {
       String hostname = InetAddress.getLocalHost().getHostName();
