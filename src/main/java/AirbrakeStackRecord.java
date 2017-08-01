@@ -1,6 +1,6 @@
 package javabrake;
 
-class AirbrakeStackRecord {
+public class AirbrakeStackRecord {
   String function;
   String file;
   int line;
