@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class NotifierTest {
   @Test
-  public void testReport() {
+  public void testReportSync() {
     Notifier notifier = new Notifier(108686, "9fd45149aa4a6fc847a65a4c3f909208");
     notifier.addFilter(
         (Notice notice) -> {
@@ -23,8 +23,8 @@ public class NotifierTest {
     assertEquals(err.message, "hello from Java");
 
     AirbrakeStackRecord record = err.backtrace.get(0);
-    assertEquals(record.function, "testReport");
-    assertEquals(record.file, "[PROJECT_ROOT]/javabrake/NotifierTest.class");
+    assertEquals(record.function, "testReportSync");
+    assertEquals(record.file, "test/javabrake/NotifierTest.class");
     assertEquals(record.line, 17);
 
     String hostname = (String) notice.context.get("hostname");
