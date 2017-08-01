@@ -3,7 +3,7 @@ package javabrake;
 import java.util.List;
 import java.util.ArrayList;
 
-class AirbrakeError {
+public class AirbrakeError {
   public String type;
   public String message;
   public List<AirbrakeStackRecord> backtrace = new ArrayList<>();

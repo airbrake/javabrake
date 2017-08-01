@@ -1,13 +1,23 @@
 package javabrake;
 
-import java.util.List;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
-import okhttp3.Response;
 
-class Notice {
+public class Notice {
+  static final HashMap<String, String> notifierInfo;
+
+  static {
+    notifierInfo = new HashMap<>();
+    notifierInfo.put("name", "javabrake");
+    notifierInfo.put("version", "0.0.1");
+    notifierInfo.put("url", "https://github.com/airbrake/javabrake");
+  }
+
   public String id;
   public String url;
   public Throwable exception;
@@ -23,6 +33,20 @@ class Notice {
     while (e != null) {
       this.errors.add(new AirbrakeError(e));
       e = e.getCause();
+    }
+
+    this.setContext("notifier", notifierInfo);
+    String lang = "Java/" + System.getProperty("java.version");
+    this.setContext("language", lang);
+    String os = System.getProperty("os.name") + "/" + System.getProperty("os.version");
+    this.setContext("os", os);
+    this.setContext("architecture", System.getProperty("os.arch"));
+    this.setContext("rootDirectory", System.getProperty("user.dir"));
+
+    try {
+      String hostname = InetAddress.getLocalHost().getHostName();
+      this.setContext("hostname", hostname);
+    } catch (UnknownHostException ex) {
     }
   }
 
