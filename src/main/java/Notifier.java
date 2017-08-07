@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class Notifier {
+  static final int maxNoticeSize = 64000;
   static final MediaType JSONType = MediaType.parse("application/json");
 
   final int projectId;
@@ -123,13 +124,33 @@ public class Notifier {
   }
 
   Request buildRequest(Notice notice) {
-    String data = this.gson.toJson(notice);
+    String data = this.noticeJson(notice);
     RequestBody body = RequestBody.create(JSONType, data);
     return new Request.Builder()
         .header("X-Airbrake-Token", this.projectKey)
         .url(this.getUrl())
         .post(body)
         .build();
+  }
+
+  String noticeJson(Notice notice) {
+    String data = "";
+    Truncator truncator = null;
+    for (int level = 0; level < 8; level++) {
+      data = this.gson.toJson(notice);
+      if (data.length() < Notifier.maxNoticeSize) {
+        break;
+      }
+
+      if (truncator == null) {
+        truncator = new Truncator(level);
+      }
+      notice.context = truncator.truncateMap(notice.context, 0);
+      notice.params = truncator.truncateMap(notice.params, 0);
+      notice.session = truncator.truncateMap(notice.session, 0);
+      notice.environment = truncator.truncateMap(notice.environment, 0);
+    }
+    return data;
   }
 
   String getUrl() {
