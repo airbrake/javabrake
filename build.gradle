@@ -6,8 +6,15 @@
  * user guide available at https://docs.gradle.org/4.0/userguide/java_library_plugin.html
  */
 
+plugins {
+    id 'com.jfrog.bintray' version '1.7.3'
+}
+
 // Apply the java-library plugin to add support for Java Library
 apply plugin: 'java-library'
+
+group = 'io.airbrake.javabrake'
+version = '0.0.1'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -33,5 +40,22 @@ test {
         showExceptions true
         showStackTraces true
         exceptionFormat "full"
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'generic'
+        name = 'javabrake'
+        userOrg = 'airbrake'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/airbrake/javabrake.git'
+        version {
+            name = '0.0.1'
+            desc = 'Airbrake notifier for Java'
+            vcsTag = '0.0.1'
+        }
     }
 }

@@ -19,13 +19,13 @@ public class NotifierTest {
 
     assertEquals(notice.errors.size(), 1);
     AirbrakeError err = notice.errors.get(0);
-    assertEquals(err.type, "java.io.IOException");
-    assertEquals(err.message, "hello from Java");
+    assertEquals("java.io.IOException", err.type);
+    assertEquals("hello from Java", err.message);
 
     AirbrakeStackRecord record = err.backtrace.get(0);
-    assertEquals(record.function, "testReportSync");
-    assertEquals(record.file, "test/javabrake/NotifierTest.class");
-    assertEquals(record.line, 17);
+    assertEquals("testReportSync", record.function);
+    assertEquals("test/javabrake/NotifierTest.class", record.file);
+    assertEquals(17, record.line);
 
     String hostname = (String) notice.context.get("hostname");
     assertTrue(hostname != "");
