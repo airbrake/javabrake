@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 class NoticeIdURL {
   String id;

@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 import java.util.ArrayList;
 import java.lang.StackTraceElement;

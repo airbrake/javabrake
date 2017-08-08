@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -18,7 +18,7 @@ public class NotifierTest {
 
     AirbrakeStackRecord record = err.backtrace.get(0);
     assertEquals("testBuildNotice", record.function);
-    assertEquals("test/javabrake/NotifierTest.class", record.file);
+    assertEquals("test/io/airbrake/javabrake/NotifierTest.class", record.file);
     assertEquals(12, record.line);
 
     String hostname = (String) notice.context.get("hostname");

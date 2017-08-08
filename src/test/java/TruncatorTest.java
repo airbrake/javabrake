@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

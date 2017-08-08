@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 public class AirbrakeStackRecord {
   String function;

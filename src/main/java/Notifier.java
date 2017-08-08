@@ -1,37 +1,31 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.CompletableFuture;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import javax.annotation.Nullable;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.RequestBody;
-import okhttp3.Call;
-import okhttp3.Callback;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class Notifier {
-  static final int maxNoticeSize = 64000;
-  static final MediaType JSONType = MediaType.parse("application/json");
-
-  final int projectId;
-  final String projectKey;
-
-  final Gson gson = new GsonBuilder().create();
-  final OkHttpClient client = new OkHttpClient();
+  AsyncReporter asyncReporter;
+  SyncReporter syncReporter;
 
   final List<NoticeFilter> filters = new ArrayList<>();
 
   Notifier(int projectId, String projectKey) {
-    this.projectId = projectId;
-    this.projectKey = projectKey;
+    this.asyncReporter = new OkAsyncReporter(projectId, projectKey);
+    this.syncReporter = new OkSyncReporter(projectId, projectKey);
+  }
+
+  public Notifier setAsyncReporter(AsyncReporter reporter) {
+    this.asyncReporter = reporter;
+    return this;
+  }
+
+  public Notifier setSyncReporter(SyncReporter reporter) {
+    this.syncReporter = reporter;
+    return this;
   }
 
   public Notifier setRootDirectory(String dir) {
@@ -53,12 +47,12 @@ public class Notifier {
 
   public Future<Notice> report(Throwable e) {
     Notice notice = this.buildNotice(e);
-    return this.sendNotice(notice);
+    return this.asyncReporter.report(notice);
   }
 
   public Notice reportSync(Throwable e) {
     Notice notice = this.buildNotice(e);
-    return this.sendNoticeSync(notice);
+    return this.syncReporter.report(notice);
   }
 
   public Notice buildNotice(Throwable e) {
@@ -75,96 +69,5 @@ public class Notifier {
     }
 
     return notice;
-  }
-
-  public Future<Notice> sendNotice(Notice notice) {
-    CompletableFuture<Notice> future = new CompletableFuture<>();
-
-    if (notice == null) {
-      future.completeExceptionally(new IOException("javabrake: notice is ignored"));
-      return future;
-    }
-
-    Notifier notifier = this;
-    this.client
-        .newCall(this.buildRequest(notice))
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
-                future.completeExceptionally(e);
-              }
-
-              @Override
-              public void onResponse(Call call, Response resp) {
-                notifier.parseResponse(resp, notice);
-                future.complete(notice);
-              }
-            });
-    return future;
-  }
-
-  public Notice sendNoticeSync(Notice notice) {
-    if (notice == null) {
-      return null;
-    }
-
-    Call call = client.newCall(this.buildRequest(notice));
-
-    Response resp;
-    try {
-      resp = call.execute();
-    } catch (IOException e) {
-      notice.exception = e;
-      return notice;
-    }
-
-    this.parseResponse(resp, notice);
-    return notice;
-  }
-
-  Request buildRequest(Notice notice) {
-    String data = this.noticeJson(notice);
-    RequestBody body = RequestBody.create(JSONType, data);
-    return new Request.Builder()
-        .header("X-Airbrake-Token", this.projectKey)
-        .url(this.getUrl())
-        .post(body)
-        .build();
-  }
-
-  String noticeJson(Notice notice) {
-    String data = "";
-    Truncator truncator = null;
-    for (int level = 0; level < 8; level++) {
-      data = this.gson.toJson(notice);
-      if (data.length() < Notifier.maxNoticeSize) {
-        break;
-      }
-
-      if (truncator == null) {
-        truncator = new Truncator(level);
-      }
-      notice.context = truncator.truncateMap(notice.context, 0);
-      notice.params = truncator.truncateMap(notice.params, 0);
-      notice.session = truncator.truncateMap(notice.session, 0);
-      notice.environment = truncator.truncateMap(notice.environment, 0);
-    }
-    return data;
-  }
-
-  String getUrl() {
-    return String.format("https://api.airbrake.io/api/v3/projects/%d/notices", this.projectId);
-  }
-
-  void parseResponse(Response resp, Notice notice) {
-    if (!resp.isSuccessful()) {
-      notice.exception = new IOException("javabrake: unexpected response " + resp);
-      return;
-    }
-
-    NoticeIdURL data = this.gson.fromJson(resp.body().charStream(), NoticeIdURL.class);
-    notice.id = data.id;
-    notice.url = data.url;
   }
 }

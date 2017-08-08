@@ -1,4 +1,4 @@
-package javabrake;
+package io.airbrake.javabrake;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
