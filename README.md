@@ -4,7 +4,7 @@
 
 <img src="http://f.cl.ly/items/0u0S1z2l3Q05371C1C0I/java%2009.19.32.jpg" width=800px>
 
-## Istallation
+## Installation
 
 Gradle:
 
@@ -83,6 +83,10 @@ notifier.onReportedNotice(
       }
     });
 ```
+
+## log4j integration
+
+See https://github.com/airbrake/log4javabrake
 
 ## Build
 
