@@ -71,6 +71,16 @@ try {
 }
 ```
 
+Setting custom params:
+
+```java
+notifier.addFilter(
+    (Notice notice) -> {
+      notice.setParam("myparam", "myvalue");
+      return notice;
+    });
+```
+
 Debugging why notices are not sent:
 
 ```java
