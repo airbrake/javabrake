@@ -17,6 +17,8 @@ dependencies {
     compile 'com.google.code.gson:gson:1.7.2'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 
+    testCompile 'com.github.tomakehurst:wiremock:2.7.1'
+
     testImplementation 'junit:junit:4.12'
 }
 

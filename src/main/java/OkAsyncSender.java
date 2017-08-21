@@ -17,6 +17,13 @@ class OkAsyncSender extends OkSender implements AsyncSender {
     CompletableFuture<Notice> future = new CompletableFuture<>();
 
     if (notice == null) {
+      future.completeExceptionally(new IOException("notice is null"));
+      return future;
+    }
+
+    long utime = System.currentTimeMillis() / 1000L;
+    if (utime < this.rateLimitReset.get()) {
+      notice.exception = OkSender.projectRateLimitedException;
       future.completeExceptionally(notice.exception);
       return future;
     }

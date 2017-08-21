@@ -29,6 +29,12 @@ public class Notifier {
     }
   }
 
+  public Notifier setHost(String host) {
+    this.asyncSender.setHost(host);
+    this.syncSender.setHost(host);
+    return this;
+  }
+
   public Notifier setAsyncSender(AsyncSender sender) {
     this.asyncSender = sender;
     return this;

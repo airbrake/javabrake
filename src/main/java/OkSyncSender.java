@@ -18,6 +18,12 @@ class OkSyncSender extends OkSender implements SyncSender {
       return null;
     }
 
+    long utime = System.currentTimeMillis() / 1000L;
+    if (utime < this.rateLimitReset.get()) {
+      notice.exception = OkSender.projectRateLimitedException;
+      return notice;
+    }
+
     Call call = OkSyncSender.okhttp.newCall(this.buildRequest(notice));
 
     Response resp;
