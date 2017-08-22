@@ -8,20 +8,32 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.RequestBody;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 class OkSender {
   static final int maxNoticeSize = 64000;
   static final MediaType JSONType = MediaType.parse("application/json");
+  static final String airbrakeHost = "https://api.airbrake.io";
 
   static final Gson gson = new GsonBuilder().create();
   static final OkHttpClient okhttp = new OkHttpClient();
 
+  static final IOException projectRateLimitedException = new IOException("account is rate limited");
+
   final int projectId;
   final String projectKey;
+  String url;
+
+  final AtomicLong rateLimitReset = new AtomicLong(0);
 
   public OkSender(int projectId, String projectKey) {
     this.projectId = projectId;
     this.projectKey = projectKey;
+    this.url = this.buildUrl(OkSender.airbrakeHost);
+  }
+
+  public void setHost(String host) {
+    this.url = this.buildUrl(host);
   }
 
   Request buildRequest(Notice notice) {
@@ -29,7 +41,7 @@ class OkSender {
     RequestBody body = RequestBody.create(JSONType, data);
     return new Request.Builder()
         .header("X-Airbrake-Token", this.projectKey)
-        .url(this.getUrl())
+        .url(this.url)
         .post(body)
         .build();
   }
@@ -54,8 +66,8 @@ class OkSender {
     return data;
   }
 
-  String getUrl() {
-    return String.format("https://api.airbrake.io/api/v3/projects/%d/notices", this.projectId);
+  String buildUrl(String host) {
+    return String.format("%s/api/v3/projects/%d/notices", host, this.projectId);
   }
 
   void parseResponse(Response resp, Notice notice) {
@@ -63,6 +75,25 @@ class OkSender {
       NoticeIdURL data = OkSender.gson.fromJson(resp.body().charStream(), NoticeIdURL.class);
       notice.id = data.id;
       notice.url = data.url;
+      return;
+    }
+
+    if (resp.code() == 429) {
+      notice.exception = projectRateLimitedException;
+
+      String header = resp.header("X-RateLimit-Reset");
+      if (header == null) {
+        return;
+      }
+
+      long n = 0;
+      try {
+        n = Long.parseLong(header);
+      } catch (NumberFormatException e) {
+      }
+      if (n > 0) {
+        this.rateLimitReset.set(n);
+      }
       return;
     }
 
