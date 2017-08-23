@@ -18,7 +18,7 @@ class OkSender {
   static final Gson gson = new GsonBuilder().create();
   static final OkHttpClient okhttp = new OkHttpClient();
 
-  static final IOException projectRateLimitedException = new IOException("account is rate limited");
+  static final IOException ipRateLimitedException = new IOException("IP is rate limited");
 
   final int projectId;
   final String projectKey;
@@ -79,7 +79,7 @@ class OkSender {
     }
 
     if (resp.code() == 429) {
-      notice.exception = projectRateLimitedException;
+      notice.exception = ipRateLimitedException;
 
       String header = resp.header("X-RateLimit-Reset");
       if (header == null) {

@@ -20,7 +20,7 @@ class OkSyncSender extends OkSender implements SyncSender {
 
     long utime = System.currentTimeMillis() / 1000L;
     if (utime < this.rateLimitReset.get()) {
-      notice.exception = OkSender.projectRateLimitedException;
+      notice.exception = OkSender.ipRateLimitedException;
       return notice;
     }
 

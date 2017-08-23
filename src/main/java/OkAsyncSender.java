@@ -23,7 +23,7 @@ class OkAsyncSender extends OkSender implements AsyncSender {
 
     long utime = System.currentTimeMillis() / 1000L;
     if (utime < this.rateLimitReset.get()) {
-      notice.exception = OkSender.projectRateLimitedException;
+      notice.exception = OkSender.ipRateLimitedException;
       future.completeExceptionally(notice.exception);
       return future;
     }

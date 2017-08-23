@@ -75,7 +75,7 @@ public class NotifierTest {
     for (int i = 0; i < 2; i++) {
       Notice notice = notifier.reportSync(this.exc);
       assertNotNull(notice.exception);
-      assertEquals("java.io.IOException: account is rate limited", notice.exception.toString());
+      assertEquals("java.io.IOException: IP is rate limited", notice.exception.toString());
     }
 
     verify(1, postRequestedFor(urlEqualTo(apiURL)));
