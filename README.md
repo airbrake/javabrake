@@ -98,6 +98,10 @@ notifier.onReportedNotice(
 
 See https://github.com/airbrake/log4javabrake
 
+## log4j2 integration
+
+See https://github.com/airbrake/log4javabrake2
+
 ## Build
 
 ```sh
