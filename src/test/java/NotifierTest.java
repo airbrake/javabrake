@@ -23,7 +23,7 @@ public class NotifierTest {
     assertEquals("java.io.IOException", err.type);
     assertEquals("hello from Java", err.message);
 
-    NoticeStackRecord record = err.backtrace.get(0);
+    NoticeStackRecord record = err.backtrace[0];
     assertEquals("<init>", record.function);
     assertEquals("test/io/airbrake/javabrake/NotifierTest.class", record.file);
     assertEquals(15, record.line);

@@ -6,21 +6,18 @@ import java.util.ArrayList;
 public class NoticeError {
   public final String type;
   public final String message;
-  public final List<NoticeStackRecord> backtrace;
+  public final NoticeStackRecord[] backtrace;
 
   public NoticeError(Throwable e) {
-    this.type = e.getClass().getCanonicalName();
-    this.message = e.getMessage();
-
-    this.backtrace = new ArrayList<>();
-    for (StackTraceElement el : e.getStackTrace()) {
-      this.backtrace.add(new NoticeStackRecord(el));
-    }
+    this(e.getClass().getCanonicalName(), e.getMessage(), e.getStackTrace());
   }
 
-  public NoticeError(String type, String message, List<NoticeStackRecord> backtrace) {
+  public NoticeError(String type, String message, StackTraceElement[] stackTrace) {
     this.type = type;
     this.message = message;
-    this.backtrace = backtrace;
+    this.backtrace = new NoticeStackRecord[stackTrace.length];
+    for (int i = 0; i < stackTrace.length; i++) {
+      this.backtrace[i] = new NoticeStackRecord(stackTrace[i]);
+    }
   }
 }
