@@ -9,7 +9,7 @@
 Gradle:
 
 ```gradle
-compile 'io.airbrake:javabrake:0.1.1'
+compile 'io.airbrake:javabrake:0.1.2'
 ```
 
 Maven:
@@ -18,7 +18,7 @@ Maven:
 <dependency>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -26,7 +26,7 @@ Maven:
 Ivy:
 
 ```xml
-<dependency org='io.airbrake' name='javabrake' rev='0.1.1'>
+<dependency org='io.airbrake' name='javabrake' rev='0.1.2'>
   <artifact name='javabrake' ext='pom'></artifact>
 </dependency>
 ```
