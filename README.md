@@ -102,6 +102,10 @@ See https://github.com/airbrake/log4javabrake
 
 See https://github.com/airbrake/log4javabrake2
 
+## logback integration
+
+See https://github.com/airbrake/logback
+
 ## Build
 
 ```sh
