@@ -3,6 +3,7 @@ package io.airbrake.javabrake;
 import java.util.concurrent.Future;
 import java.util.concurrent.CompletableFuture;
 import java.io.IOException;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
