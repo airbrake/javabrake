@@ -18,6 +18,8 @@ class OkSender {
   static final Gson gson = new GsonBuilder().create();
   static final OkHttpClient okhttp = new OkHttpClient();
 
+  static final IOException ipUnauthorizedException =
+      new IOException("unauthorized: project id or key are wrong");
   static final IOException ipRateLimitedException = new IOException("IP is rate limited");
 
   final int projectId;
@@ -78,10 +80,15 @@ class OkSender {
       return;
     }
 
+    if (resp.code() == 401) {
+      notice.exception = ipUnauthorizedException;
+      return;
+    }
+
     if (resp.code() == 429) {
       notice.exception = ipRateLimitedException;
 
-      String header = resp.header("X-RateLimit-Reset");
+      String header = resp.header("X-RateLimit-Delay");
       if (header == null) {
         return;
       }
@@ -92,7 +99,7 @@ class OkSender {
       } catch (NumberFormatException e) {
       }
       if (n > 0) {
-        this.rateLimitReset.set(n);
+        this.rateLimitReset.set(System.currentTimeMillis() / 1000L + n);
       }
       return;
     }

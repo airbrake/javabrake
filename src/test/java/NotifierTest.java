@@ -69,7 +69,7 @@ public class NotifierTest {
                 aResponse()
                     .withStatus(429)
                     .withHeader("Content-Type", "application/json")
-                    .withHeader("X-RateLimit-Reset", Long.toString(utime + 1000))
+                    .withHeader("X-RateLimit-Delay", "1000")
                     .withBody("{}")));
 
     for (int i = 0; i < 2; i++) {
