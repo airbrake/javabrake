@@ -71,7 +71,20 @@ try {
 }
 ```
 
-Setting custom params:
+By default `report` sends errors asynchronously returning a `Future`, but synchronous API is also available:
+
+```java
+import io.airbrake.javabrake.Notice;
+
+Notice notice = Airbrake.reportSync(e);
+if (notice.exception != null) {
+    logger.info(notice.exception);
+} else {
+    logger.info(notice.id);
+}
+```
+
+You can also set custom params on all reported notices:
 
 ```java
 notifier.addFilter(
@@ -81,7 +94,7 @@ notifier.addFilter(
     });
 ```
 
-Debugging why notices are not sent:
+To debug why notices are not sent you can use `onReportedNotice` hook:
 
 ```java
 notifier.onReportedNotice(
