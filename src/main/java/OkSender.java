@@ -1,14 +1,17 @@
 package io.airbrake.javabrake;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.RequestBody;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLong;
 
 class OkSender {
   static final int maxNoticeSize = 64000;
@@ -16,7 +19,12 @@ class OkSender {
   static final String airbrakeHost = "https://api.airbrake.io";
 
   static final Gson gson = new GsonBuilder().create();
-  static final OkHttpClient okhttp = new OkHttpClient();
+  static final OkHttpClient okhttp =
+      new OkHttpClient.Builder()
+          .connectTimeout(5000, TimeUnit.MILLISECONDS)
+          .readTimeout(5000, TimeUnit.MILLISECONDS)
+          .writeTimeout(5000, TimeUnit.MILLISECONDS)
+          .build();
 
   static final IOException ipUnauthorizedException =
       new IOException("unauthorized: project id or key are wrong");
