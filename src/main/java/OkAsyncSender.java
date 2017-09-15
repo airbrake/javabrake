@@ -9,6 +9,10 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 class OkAsyncSender extends OkSender implements AsyncSender {
+  static final int queuedCallsLimit = 1000;
+  static final IOException queuedCallsLimitException =
+      new IOException("too many HTTP requests queued for execution");
+
   public OkAsyncSender(int projectId, String projectKey) {
     super(projectId, projectKey);
   }
@@ -24,13 +28,19 @@ class OkAsyncSender extends OkSender implements AsyncSender {
 
     long utime = System.currentTimeMillis() / 1000L;
     if (utime < this.rateLimitReset.get()) {
-      notice.exception = OkSender.ipRateLimitedException;
+      notice.exception = ipRateLimitedException;
+      future.completeExceptionally(notice.exception);
+      return future;
+    }
+
+    if (okhttp.dispatcher().queuedCallsCount() > queuedCallsLimit) {
+      notice.exception = queuedCallsLimitException;
       future.completeExceptionally(notice.exception);
       return future;
     }
 
     OkAsyncSender sender = this;
-    OkAsyncSender.okhttp
+    okhttp
         .newCall(this.buildRequest(notice))
         .enqueue(
             new Callback() {
