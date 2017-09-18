@@ -9,7 +9,7 @@
 Gradle:
 
 ```gradle
-compile 'io.airbrake:javabrake:0.1.3'
+compile 'io.airbrake:javabrake:0.1.4'
 ```
 
 Maven:
@@ -18,7 +18,7 @@ Maven:
 <dependency>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.1.3</version>
+  <version>0.1.4</version>
   <type>pom</type>
 </dependency>
 ```
@@ -26,7 +26,7 @@ Maven:
 Ivy:
 
 ```xml
-<dependency org='io.airbrake' name='javabrake' rev='0.1.3'>
+<dependency org='io.airbrake' name='javabrake' rev='0.1.4'>
   <artifact name='javabrake' ext='pom'></artifact>
 </dependency>
 ```
@@ -61,7 +61,7 @@ try {
 
 Using `Airbrake` proxy class:
 
-``` java
+```java
 import io.airbrake.javabrake.Airbrake;
 
 try {
