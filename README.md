@@ -124,3 +124,7 @@ See https://github.com/airbrake/logback
 ```sh
 gradle build
 ```
+
+Usefull links:
+ - http://central.sonatype.org/pages/gradle.html
+ - http://central.sonatype.org/pages/releasing-the-deployment.html
