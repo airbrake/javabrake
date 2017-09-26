@@ -121,8 +121,21 @@ See https://github.com/airbrake/logback
 
 ## Build
 
-```sh
-gradle build
+```shell
+./gradlew build
+```
+
+Upload to JCentral:
+
+```shell
+./gradlew bintrayUpload
+```
+
+Upload to Maven Central:
+
+```shell
+./gradlew uploadArchives
+./gradlew closeAndReleaseRepository
 ```
 
 Usefull links:
