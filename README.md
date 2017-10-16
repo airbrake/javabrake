@@ -94,6 +94,19 @@ notifier.addFilter(
     });
 ```
 
+Or ignore specific notice:
+
+```java
+notifier.addFilter(
+    (Notice notice) -> {
+      if (notice.context.get("environment") == "development") {
+          // Ignore notice.
+          return null;
+      }
+      return notice;
+    });
+```
+
 To debug why notices are not sent you can use `onReportedNotice` hook:
 
 ```java
