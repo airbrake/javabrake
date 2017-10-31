@@ -23,10 +23,10 @@ public class NotifierTest {
     assertEquals("java.io.IOException", err.type);
     assertEquals("hello from Java", err.message);
 
-    NoticeStackRecord record = err.backtrace[0];
-    assertEquals("<init>", record.function);
-    assertEquals("test/io/airbrake/javabrake/NotifierTest.class", record.file);
-    assertEquals(15, record.line);
+    NoticeStackFrame frame = err.backtrace[0];
+    assertEquals("<init>", frame.function);
+    assertEquals("test/io/airbrake/javabrake/NotifierTest.class", frame.file);
+    assertEquals(15, frame.line);
 
     String hostname = (String) notice.context.get("hostname");
     assertTrue(hostname != "");
