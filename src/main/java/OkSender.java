@@ -50,7 +50,7 @@ class OkSender {
     String data = this.noticeJson(notice);
     RequestBody body = RequestBody.create(JSONType, data);
     return new Request.Builder()
-        .header("X-Airbrake-Token", this.projectKey)
+        .header("Authorization", "Bearer " + this.projectKey)
         .url(this.url)
         .post(body)
         .build();
