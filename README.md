@@ -83,6 +83,17 @@ if (notice.exception != null) {
 }
 ```
 
+To set custom params you can build and send notice in separate steps:
+
+```java
+import io.airbrake.javabrake.Notice;
+
+Notice notice = Airbrake.buildNotice(e);
+notice.setContext("component", "mycomponent");
+notice.setParam("param1", "value1");
+Airbrake.send(notice);
+```
+
 You can also set custom params on all reported notices:
 
 ```java
