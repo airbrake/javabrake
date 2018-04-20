@@ -53,6 +53,7 @@ class OkAsyncSender extends OkSender implements AsyncSender {
               @Override
               public void onResponse(Call call, Response resp) {
                 sender.parseResponse(resp, notice);
+                resp.close();
                 if (notice.exception != null) {
                   future.completeExceptionally(notice.exception);
                 } else {

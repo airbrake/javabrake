@@ -3,15 +3,18 @@ package io.airbrake.javabrake;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.TimeUnit;
+import java.io.Reader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 class OkSender {
   static final int maxNoticeSize = 64000;
@@ -82,9 +85,13 @@ class OkSender {
 
   void parseResponse(Response resp, Notice notice) {
     if (resp.isSuccessful()) {
-      NoticeIdURL data = OkSender.gson.fromJson(resp.body().charStream(), NoticeIdURL.class);
-      notice.id = data.id;
-      notice.url = data.url;
+      try {
+        NoticeIdURL data = this.parseJson(resp, NoticeIdURL.class);
+        notice.id = data.id;
+        notice.url = data.url;
+      } catch (JsonParseException e) {
+        notice.exception = e;
+      }
       return;
     }
 
@@ -113,10 +120,22 @@ class OkSender {
     }
 
     if (resp.code() >= 400 && resp.code() < 500) {
-      NoticeCode data = OkSender.gson.fromJson(resp.body().charStream(), NoticeCode.class);
-      notice.exception = new IOException(data.message);
-    } else {
-      notice.exception = new IOException("unexpected response " + resp);
+      try {
+        NoticeCode data = this.parseJson(resp, NoticeCode.class);
+        notice.exception = new IOException(data.message);
+      } catch (JsonParseException e) {
+        notice.exception = e;
+      }
+      return;
+    }
+
+    notice.exception = new IOException("unexpected response " + resp);
+  }
+
+  <T> T parseJson(Response resp, Class<T> classOfT) {
+    try (ResponseBody body = resp.body()) {
+      Reader stream = body.charStream();
+      return OkSender.gson.fromJson(stream, classOfT);
     }
   }
 }

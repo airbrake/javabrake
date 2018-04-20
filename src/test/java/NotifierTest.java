@@ -41,9 +41,34 @@ public class NotifierTest {
         });
 
     Notice notice = this.notifier.reportSync(this.exc);
+    assertNotNull(notice.exception);
+    assertEquals(
+        "java.io.IOException: unauthorized: project id or key are wrong",
+        notice.exception.toString());
 
     String env = (String) notice.context.get("environment");
     assertEquals("test", env);
+  }
+
+  @Test
+  public void testReportAsync() {
+    try {
+      this.notifier.report(this.exc).get();
+      fail("expected an exception");
+    } catch (Throwable e) {
+      e = e.getCause();
+      assertEquals("java.io.IOException: unauthorized: project id or key are wrong", e.toString());
+    }
+  }
+
+  @Test
+  public void testReportServerDown() {
+    this.notifier.setHost("https://google.com");
+    Notice notice = this.notifier.reportSync(this.exc);
+    assertNotNull(notice.exception);
+    assertEquals(
+        "com.google.gson.JsonParseException: Expecting object found: \"<!DOCTYPE\"",
+        notice.exception.toString());
   }
 
   @Test
