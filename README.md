@@ -9,7 +9,7 @@
 Gradle:
 
 ```gradle
-compile 'io.airbrake:javabrake:0.1.4'
+compile 'io.airbrake:javabrake:0.1.5'
 ```
 
 Maven:
@@ -18,14 +18,14 @@ Maven:
 <dependency>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
 </dependency>
 ```
 
 Ivy:
 
 ```xml
-<dependency org='io.airbrake' name='javabrake' rev='0.1.4'>
+<dependency org='io.airbrake' name='javabrake' rev='0.1.5'>
   <artifact name='javabrake' ext='pom'></artifact>
 </dependency>
 ```
@@ -38,7 +38,7 @@ Configuration:
 import io.airbrake.javabrake.Notifier;
 
 int projectId = 12345;
-String projectKey = "abcdefg";
+String projectKey = "FIXME";
 Notifier notifier = new Notifier(projectId, projectKey);
 
 notifier.addFilter(
