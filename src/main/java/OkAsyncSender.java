@@ -8,7 +8,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-class OkAsyncSender extends OkSender implements AsyncSender {
+public class OkAsyncSender extends OkSender implements AsyncSender {
   static final int queuedCallsLimit = 1000;
   static final IOException queuedCallsLimitException =
       new IOException("too many HTTP requests queued for execution");

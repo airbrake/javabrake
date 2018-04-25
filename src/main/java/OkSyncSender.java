@@ -8,7 +8,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-class OkSyncSender extends OkSender implements SyncSender {
+public class OkSyncSender extends OkSender implements SyncSender {
   public OkSyncSender(int projectId, String projectKey) {
     super(projectId, projectKey);
   }
