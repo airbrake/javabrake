@@ -16,17 +16,17 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-class OkSender {
+public class OkSender {
   static final int maxNoticeSize = 64000;
   static final MediaType JSONType = MediaType.parse("application/json");
   static final String airbrakeHost = "https://api.airbrake.io";
 
   static final Gson gson = new GsonBuilder().create();
-  static final OkHttpClient okhttp =
+  static OkHttpClient okhttp =
       new OkHttpClient.Builder()
-          .connectTimeout(5000, TimeUnit.MILLISECONDS)
-          .readTimeout(5000, TimeUnit.MILLISECONDS)
-          .writeTimeout(5000, TimeUnit.MILLISECONDS)
+          .connectTimeout(3000, TimeUnit.MILLISECONDS)
+          .readTimeout(3000, TimeUnit.MILLISECONDS)
+          .writeTimeout(3000, TimeUnit.MILLISECONDS)
           .build();
 
   static final IOException ipUnauthorizedException =
@@ -43,6 +43,10 @@ class OkSender {
     this.projectId = projectId;
     this.projectKey = projectKey;
     this.url = this.buildUrl(OkSender.airbrakeHost);
+  }
+
+  public static void setOkHttpClient(OkHttpClient okhttp) {
+    OkSender.okhttp = okhttp;
   }
 
   public void setHost(String host) {
