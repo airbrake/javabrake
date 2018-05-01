@@ -142,6 +142,29 @@ See https://github.com/airbrake/log4javabrake2
 
 See https://github.com/airbrake/logback
 
+## HTTP proxy
+
+javabrake uses [OkHttp](http://square.github.io/okhttp/) as an HTTP client. So in order to use proxy all you have to do is to configure OkHttpClient:
+
+```java
+import java.net.InetSocketAddress;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Proxy;
+
+import io.airbrake.javabrake.OkSender;
+
+Proxy proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("192.168.1.105", 8081);
+OkHttpClient httpClient =
+    new OkHttpClient.Builder()
+        .connectTimeout(3000, TimeUnit.MILLISECONDS)
+        .readTimeout(3000, TimeUnit.MILLISECONDS)
+        .writeTimeout(3000, TimeUnit.MILLISECONDS)
+        .proxy(proxy)
+        .build();
+OkSender.setOkHttpClient(httpClient);
+```
+
 ## Build
 
 ```shell
