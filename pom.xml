@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.1.4</version>
+  <version>0.1.6</version>
   <inceptionYear>2017</inceptionYear>
   <licenses>
     <license>
