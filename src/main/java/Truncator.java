@@ -59,6 +59,9 @@ class Truncator {
 
   Map<String, Object> truncateMap(Map<String, Object> map, int depth) {
     Map<String, Object> dst = new HashMap<>();
+    if (map == null) {
+      return dst;
+    }
     int i = 0;
     for (Map.Entry<String, Object> entry : map.entrySet()) {
       if (i >= this.maxMapSize) {

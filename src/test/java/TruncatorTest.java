@@ -103,4 +103,11 @@ public class TruncatorTest {
     String s = (String) submap2.get("submap3");
     assertEquals("[Truncated Map]", s);
   }
+
+  @Test
+  public void testTruncateNull() {
+    Truncator truncator = new Truncator(0);
+    Map<String, Object> output = truncator.truncateMap(null, 0);
+    assertEquals(new HashMap<String, Object>(), output);
+  }
 }
