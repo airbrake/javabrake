@@ -1,8 +1,10 @@
+<p align="center">
+  <img src="https://airbrake-github-assets.s3.amazonaws.com/brand/airbrake-full-logo.png" width="200">
+</p>
+
 # Java notifier for Airbrake
 
 [![Build Status](https://travis-ci.org/airbrake/javabrake.svg?branch=master)](https://travis-ci.org/airbrake/javabrake)
-
-<img src="http://f.cl.ly/items/0u0S1z2l3Q05371C1C0I/java%2009.19.32.jpg" width=800px>
 
 ## Installation
 
