@@ -1,10 +1,15 @@
+Javabrake
+=========
+
+[![.github/workflows/test.yml](https://github.com/airbrake/javabrake/actions/workflows/test.yml/badge.svg)](https://github.com/airbrake/javabrake/actions/workflows/test.yml)
+
 <p align="center">
   <img src="https://airbrake-github-assets.s3.amazonaws.com/brand/airbrake-full-logo.png" width="200">
 </p>
 
-# Java notifier for Airbrake
+## Introduction
 
-[![Build Status](https://travis-ci.org/airbrake/javabrake.svg?branch=master)](https://travis-ci.org/airbrake/javabrake)
+Javabrake is a Java notifier for Airbrake.
 
 ## Installation
 
