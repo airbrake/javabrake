@@ -16,6 +16,8 @@ public class Notifier {
   final List<NoticeHook> hooks = new ArrayList<>();
   final List<NoticeFilter> filters = new ArrayList<>();
 
+  final Config config;
+
   /**
    * @param projectId Airbrake project id
    * @param projectKey Airbrake project key
@@ -27,6 +29,14 @@ public class Notifier {
     if (Airbrake.notifier == null) {
       Airbrake.notifier = this;
     }
+
+    config = new Config();
+    config.errorNotifications = true;
+    config.errorHost = "https://api.airbrake.io";
+
+    new RemoteSettings(
+      projectId, "https://notifier-configs.airbrake.io", config
+    ).poll();
   }
 
   public Notifier setHost(String host) {
