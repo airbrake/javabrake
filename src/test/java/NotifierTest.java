@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import org.junit.Test;
+import org.junit.Before;
+
 import java.io.IOException;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Rule;
@@ -11,8 +13,15 @@ import org.junit.Rule;
 public class NotifierTest {
   @Rule public WireMockRule wireMockRule = new WireMockRule();
 
-  Notifier notifier = new Notifier(new Config());
+  static Notifier notifier;
   Throwable exc = new IOException("hello from Java");
+
+  @Before
+  public void init() {
+    Config config = new Config();
+    config.remoteConfig = false;
+    notifier = new Notifier(config);
+  }
 
   @Test
   public void testBuildNotice() {
@@ -26,7 +35,7 @@ public class NotifierTest {
     NoticeStackFrame frame = err.backtrace[0];
     assertEquals("<init>", frame.function);
     assertEquals("test/io/airbrake/javabrake/NotifierTest.class", frame.file);
-    assertEquals(15, frame.line);
+    assertEquals(17, frame.line);
 
     String hostname = (String) notice.context.get("hostname");
     assertTrue(hostname != "");
