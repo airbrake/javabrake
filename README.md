@@ -43,10 +43,12 @@ Configuration:
 
 ```java
 import io.airbrake.javabrake.Notifier;
+import io.airbrake.javabrake.Config;
 
-int projectId = 12345;
-String projectKey = "FIXME";
-Notifier notifier = new Notifier(projectId, projectKey);
+Config config = new Config();
+config.projectId = 12345;
+config.projectKey = "FIXME";
+Notifier notifier = new Notifier(config);
 
 notifier.addFilter(
     (Notice notice) -> {

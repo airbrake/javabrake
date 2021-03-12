@@ -11,7 +11,7 @@ import org.junit.Rule;
 public class NotifierTest {
   @Rule public WireMockRule wireMockRule = new WireMockRule();
 
-  Notifier notifier = new Notifier(0, "");
+  Notifier notifier = new Notifier(new Config());
   Throwable exc = new IOException("hello from Java");
 
   @Test
