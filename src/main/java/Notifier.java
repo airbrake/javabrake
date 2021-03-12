@@ -17,10 +17,12 @@ public class Notifier {
   final List<NoticeFilter> filters = new ArrayList<>();
 
   /**
-   * @param projectId Airbrake project id
-   * @param projectKey Airbrake project key
+   * @param config Configures the notifier
    */
-  public Notifier(int projectId, String projectKey) {
+  public Notifier(Config config) {
+    int projectId = config.projectId;
+    String projectKey = config.projectKey;
+
     this.asyncSender = new OkAsyncSender(projectId, projectKey);
     this.syncSender = new OkSyncSender(projectId, projectKey);
 
