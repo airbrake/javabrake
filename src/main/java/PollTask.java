@@ -3,10 +3,12 @@ package io.airbrake.javabrake;
 import java.io.IOException;
 
 import java.util.TimerTask;
+import java.util.HashMap;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.HttpUrl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,6 +27,15 @@ class PollTask extends TimerTask {
 
   final private OkHttpClient client = new OkHttpClient();
   final private Gson gson = new Gson();
+
+  final private static HashMap<String, String> NOTIFIER_INFO;
+  static {
+    NOTIFIER_INFO = new HashMap<String, String>();
+    NOTIFIER_INFO.put("notifier_name", Notice.notifierInfo.get("name"));
+    NOTIFIER_INFO.put("notifier_version", Notice.notifierInfo.get("version"));
+    NOTIFIER_INFO.put("os", System.getProperty("os.name") + "/" + System.getProperty("os.version"));
+    NOTIFIER_INFO.put("language", "Java/" + System.getProperty("java.version"));
+  }
 
   public PollTask(
     int projectId,
@@ -59,8 +70,14 @@ class PollTask extends TimerTask {
   }
 
   String request() throws IOException {
+    HttpUrl.Builder httpBuilder = HttpUrl.parse(this.data.configRoute(this.host))
+      .newBuilder();
+    for (HashMap.Entry<String, String> param : NOTIFIER_INFO.entrySet()) {
+      httpBuilder.addQueryParameter(param.getKey(), param.getValue());
+    }
+
     Request request = new Request.Builder()
-      .url(this.data.configRoute(this.host))
+      .url(httpBuilder.build())
       .build();
 
     try (Response response = client.newCall(request).execute()) {
