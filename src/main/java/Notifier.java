@@ -20,11 +20,12 @@ public class Notifier {
    * @param config Configures the notifier
    */
   public Notifier(Config config) {
-    int projectId = config.projectId;
-    String projectKey = config.projectKey;
+    this.asyncSender = new OkAsyncSender(config);
+    this.syncSender = new OkSyncSender(config);
 
-    this.asyncSender = new OkAsyncSender(projectId, projectKey);
-    this.syncSender = new OkSyncSender(projectId, projectKey);
+    if (config.errorHost != null) {
+      this.setHost(config.errorHost);
+    }
 
     if (Airbrake.notifier == null) {
       Airbrake.notifier = this;

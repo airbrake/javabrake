@@ -13,8 +13,8 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   static final IOException queuedCallsLimitException =
       new IOException("too many HTTP requests queued for execution");
 
-  public OkAsyncSender(int projectId, String projectKey) {
-    super(projectId, projectKey);
+  public OkAsyncSender(Config config) {
+    super(config);
   }
 
   @Override

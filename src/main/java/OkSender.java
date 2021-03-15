@@ -19,7 +19,6 @@ import okhttp3.ResponseBody;
 public class OkSender {
   static final int maxNoticeSize = 64000;
   static final MediaType JSONType = MediaType.parse("application/json");
-  static final String airbrakeHost = "https://api.airbrake.io";
 
   static final Gson gson = new GsonBuilder().create();
   static OkHttpClient okhttp =
@@ -33,16 +32,18 @@ public class OkSender {
       new IOException("unauthorized: project id or key are wrong");
   static final IOException ipRateLimitedException = new IOException("IP is rate limited");
 
+  final Config config;
   final int projectId;
   final String projectKey;
   String url;
 
   final AtomicLong rateLimitReset = new AtomicLong(0);
 
-  public OkSender(int projectId, String projectKey) {
-    this.projectId = projectId;
-    this.projectKey = projectKey;
-    this.url = this.buildUrl(OkSender.airbrakeHost);
+  public OkSender(Config config) {
+    this.config = config;
+    this.projectId = config.projectId;
+    this.projectKey = config.projectKey;
+    this.url = this.buildUrl(config.errorHost);
   }
 
   public static void setOkHttpClient(OkHttpClient okhttp) {
