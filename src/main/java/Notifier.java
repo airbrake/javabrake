@@ -16,10 +16,14 @@ public class Notifier {
   final List<NoticeHook> hooks = new ArrayList<>();
   final List<NoticeFilter> filters = new ArrayList<>();
 
+  final private Config config;
+
   /**
    * @param config Configures the notifier
    */
   public Notifier(Config config) {
+    this.config = config;
+
     this.asyncSender = new OkAsyncSender(config);
     this.syncSender = new OkSyncSender(config);
 
@@ -87,6 +91,10 @@ public class Notifier {
 
   /** Synchronously sends a Notice to Airbrake. */
   public Notice sendSync(Notice notice) {
+    if (!config.errorNotifications) {
+      return notice;
+    }
+
     notice = this.filterNotice(notice);
     notice = this.syncSender.send(notice);
     this.applyHooks(notice);
