@@ -9,8 +9,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class OkSyncSender extends OkSender implements SyncSender {
-  public OkSyncSender(int projectId, String projectKey) {
-    super(projectId, projectKey);
+  public OkSyncSender(Config config) {
+    super(config);
   }
 
   @Override
