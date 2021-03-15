@@ -21,6 +21,11 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   public CompletableFuture<Notice> send(Notice notice) {
     CompletableFuture<Notice> future = new CompletableFuture<>();
 
+    if (!config.errorNotifications) {
+      future.completeExceptionally(new IOException("errorNotifications is disabled"));
+      return future;
+    }
+
     if (notice == null) {
       future.completeExceptionally(new IOException("notice is null"));
       return future;
