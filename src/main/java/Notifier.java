@@ -34,6 +34,16 @@ public class Notifier {
     if (Airbrake.notifier == null) {
       Airbrake.notifier = this;
     }
+
+    if (config.remoteConfig) {
+      new RemoteSettings(
+        config.projectId,
+        "https://notifier-configs.airbrake.io",
+        config,
+        this.asyncSender,
+        this.syncSender
+      ).poll();
+    }
   }
 
   public Notifier setHost(String host) {

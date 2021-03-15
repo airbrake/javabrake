@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class Notice {
-  static final HashMap<String, String> notifierInfo;
+  public static final HashMap<String, String> notifierInfo;
 
   static {
     notifierInfo = new HashMap<>();
