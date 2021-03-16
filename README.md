@@ -16,7 +16,7 @@ Javabrake is a Java notifier for Airbrake.
 Gradle:
 
 ```gradle
-compile 'io.airbrake:javabrake:0.1.6'
+compile 'io.airbrake:javabrake:0.2.0'
 ```
 
 Maven:
@@ -25,14 +25,14 @@ Maven:
 <dependency>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.1.6</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
 Ivy:
 
 ```xml
-<dependency org='io.airbrake' name='javabrake' rev='0.1.6'>
+<dependency org='io.airbrake' name='javabrake' rev='0.2.0'>
   <artifact name='javabrake' ext='pom'></artifact>
 </dependency>
 ```
