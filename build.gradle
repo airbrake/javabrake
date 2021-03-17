@@ -11,7 +11,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'io.codearte.nexus-staging'
 
