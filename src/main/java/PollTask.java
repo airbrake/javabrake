@@ -12,7 +12,7 @@ import okhttp3.HttpUrl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 class PollTask extends TimerTask {
   final private int projectId;
@@ -59,11 +59,18 @@ class PollTask extends TimerTask {
     String response = null;
     try {
       response = this.request();
-    } catch(IOException ex) {
+    } catch(IOException e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
 
-    RemoteConfigJSON json_data = gson.fromJson(response, RemoteConfigJSON.class);
-    this.data.merge(json_data);
+    try {
+      RemoteConfigJSON json_data = gson.fromJson(response, RemoteConfigJSON.class);
+      this.data.merge(json_data);
+    } catch(JsonSyntaxException e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
 
     this.setErrorHost(this.data);
     this.processErrorNotifications(this.data);
