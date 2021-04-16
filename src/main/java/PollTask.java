@@ -62,14 +62,17 @@ class PollTask extends TimerTask {
     } catch(IOException e) {
       System.out.println(e.getMessage());
       e.printStackTrace();
+      return;
     }
 
     try {
       RemoteConfigJSON json_data = gson.fromJson(response, RemoteConfigJSON.class);
       this.data.merge(json_data);
     } catch(JsonSyntaxException e) {
+      System.out.printf("parse error on: %s\n", response);
       System.out.println(e.getMessage());
       e.printStackTrace();
+      return;
     }
 
     this.setErrorHost(this.data);
