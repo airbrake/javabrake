@@ -4,9 +4,15 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.TimeUnit;
 import java.io.Reader;
+import java.lang.Throwable;
+import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonParseException;
 
 import okhttp3.MediaType;
@@ -20,7 +26,16 @@ public class OkSender {
   static final int maxNoticeSize = 64000;
   static final MediaType JSONType = MediaType.parse("application/json");
 
-  static final Gson gson = new GsonBuilder().create();
+  static class ThrowableSerializer implements JsonSerializer<Throwable> {
+    @Override
+    public JsonElement serialize(Throwable src, Type typeOfSrc, JsonSerializationContext context) {
+      return new JsonPrimitive(src.toString());
+    }
+  }
+
+  static final Gson gson = new GsonBuilder()
+    .registerTypeAdapter(Throwable.class, new ThrowableSerializer())
+    .create();
   static OkHttpClient okhttp =
       new OkHttpClient.Builder()
           .connectTimeout(3000, TimeUnit.MILLISECONDS)
