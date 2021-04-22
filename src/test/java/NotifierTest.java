@@ -76,7 +76,7 @@ public class NotifierTest {
     Notice notice = this.notifier.reportSync(this.exc);
     assertNotNull(notice.exception);
     assertEquals(
-        "com.google.gson.JsonParseException: Expecting object found: \"<!DOCTYPE\"",
+        "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $",
         notice.exception.toString());
   }
 
