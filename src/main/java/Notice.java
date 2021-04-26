@@ -14,7 +14,7 @@ public class Notice {
   static {
     notifierInfo = new HashMap<>();
     notifierInfo.put("name", "javabrake");
-    notifierInfo.put("version", "0.2.2");
+    notifierInfo.put("version", "0.2.3");
     notifierInfo.put("url", "https://github.com/airbrake/javabrake");
   }
 
