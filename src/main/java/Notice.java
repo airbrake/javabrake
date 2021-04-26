@@ -20,8 +20,10 @@ public class Notice {
 
   public String id;
   public String url;
+  /** Marked transient so gson will ignore this field during serialization **/
+  /** https://github.com/google/gson/blob/master/UserGuide.md#java-modifier-exclusion **/
   /** Exception occurred reporting this Notice. */
-  public Throwable exception;
+  public transient Throwable exception;
 
   public List<NoticeError> errors;
   @Nullable public Map<String, Object> context;
