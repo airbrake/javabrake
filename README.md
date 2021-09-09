@@ -16,7 +16,7 @@ Javabrake is a Java notifier for Airbrake.
 Gradle:
 
 ```gradle
-compile 'io.airbrake:javabrake:0.2.3'
+implementation 'io.airbrake:javabrake:0.2.3'
 ```
 
 Maven:
