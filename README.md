@@ -16,7 +16,7 @@ Javabrake is a Java notifier for Airbrake.
 Gradle:
 
 ```gradle
-implementation 'io.airbrake:javabrake:0.2.3'
+implementation 'io.airbrake:javabrake:0.2.4'
 ```
 
 Maven:
@@ -25,14 +25,14 @@ Maven:
 <dependency>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
 </dependency>
 ```
 
 Ivy:
 
 ```xml
-<dependency org='io.airbrake' name='javabrake' rev='0.2.3'>
+<dependency org='io.airbrake' name='javabrake' rev='0.2.4'>
   <artifact name='javabrake' ext='pom'></artifact>
 </dependency>
 ```
@@ -170,7 +170,21 @@ OkHttpClient httpClient =
 OkSender.setOkHttpClient(httpClient);
 ```
 
-## Build
+## Notifier release instrucitons
+
+### A note on Java version
+Make sure you build and release this notifier with open-jdk-8, one way to manage your local java version is using [asdf](https://asdf-vm.com). You can install this tool via homebrew:
+```
+brew install asdf
+```
+Then install open-jdk-8 and set it as JAVA home before running any of the `./gradlew` commands:
+```
+asdf plugin add java
+asdf install java adoptopenjdk-8.0.312+7
+export JAVA_HOME=$HOME/.asdf/installs/java/adoptopenjdk-8.0.312+7
+```
+
+### Build
 
 ```shell
 ./gradlew build
