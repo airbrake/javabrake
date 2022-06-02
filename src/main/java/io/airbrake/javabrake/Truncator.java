@@ -1,8 +1,8 @@
 package io.airbrake.javabrake;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 class Truncator {
   int maxStringLength = 1024;

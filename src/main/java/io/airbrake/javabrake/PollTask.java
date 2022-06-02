@@ -1,18 +1,14 @@
 package io.airbrake.javabrake;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
-
-import java.util.TimerTask;
 import java.util.HashMap;
-
+import java.util.TimerTask;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.HttpUrl;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 
 class PollTask extends TimerTask {
   final private int projectId;

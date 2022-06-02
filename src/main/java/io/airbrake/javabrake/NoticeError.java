@@ -1,8 +1,5 @@
 package io.airbrake.javabrake;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class NoticeError {
   public final String type;
   public final String message;
