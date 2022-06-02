@@ -1,8 +1,5 @@
 package io.airbrake.javabrake;
 
-import java.util.ArrayList;
-import java.lang.StackTraceElement;
-import java.lang.Class;
 import java.net.URL;
 
 class ClassUtil {

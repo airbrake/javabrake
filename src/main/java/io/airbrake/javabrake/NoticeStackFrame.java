@@ -1,7 +1,5 @@
 package io.airbrake.javabrake;
 
-import java.util.Map;
-
 public class NoticeStackFrame {
   static ClassUtil util = new ClassUtil();
 

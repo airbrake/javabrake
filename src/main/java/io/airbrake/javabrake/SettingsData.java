@@ -2,8 +2,6 @@ package io.airbrake.javabrake;
 
 import java.util.ArrayList;
 
-import com.google.gson.Gson;
-
 class SettingsData {
   // API version to poll.
   static final String API_VER = "2020-06-18";
