@@ -125,8 +125,4 @@ signing {
 
 javadoc{
     
-if (!JavaVersion.current().isJava9Compatible()) {
-    DeprecationLogger.nagUserWith(JAVA7_DEPRECATION_WARNING_DOC);
-    options.addBooleanOption('html5', true)
-}
 }
