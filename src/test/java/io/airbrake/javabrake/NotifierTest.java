@@ -1,32 +1,23 @@
 package io.airbrake.javabrake;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.Before;
 
 import java.io.IOException;
-
-import com.github.tomakehurst.wiremock.WireMockServer;
-//import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.Rule;
 
 public class NotifierTest {
-  //@Rule public WireMockRule wireMockRule = new WireMockRule();
-  static WireMockServer wireMockServer = null;
+  @Rule public WireMockRule wireMockRule = new WireMockRule();
+
   static Notifier notifier;
   Throwable exc = new IOException("hello from Java");
 
-  @BeforeAll
-  public static void init() {
-    wireMockServer = new WireMockServer(); //No-args constructor will start on port 8080, no HTTPS
-    wireMockServer.start();
+  @Before
+  public void init() {
     Config config = new Config();
     config.remoteConfig = false;
     notifier = new Notifier(config);
@@ -34,7 +25,7 @@ public class NotifierTest {
 
   @Test
   public void testBuildNotice() {
-    Notice notice = NotifierTest.notifier.buildNotice(this.exc);
+    Notice notice =  NotifierTest.notifier.buildNotice(this.exc);
 
     assertEquals(notice.errors.size(), 1);
     NoticeError err = notice.errors.get(0);
@@ -43,8 +34,8 @@ public class NotifierTest {
 
     NoticeStackFrame frame = err.backtrace[0];
     assertEquals("<init>", frame.function);
-  //  assertEquals("test/io/airbrake/javabrake/NotifierTest.class", frame.file);
-  //  assertEquals(17, frame.line);
+    assertTrue( frame.file.contains("test/io/airbrake/javabrake/NotifierTest.class"));
+    assertEquals(17, frame.line);
 
     String hostname = (String) notice.context.get("hostname");
     assertTrue(hostname != "");
@@ -52,17 +43,13 @@ public class NotifierTest {
 
   @Test
   public void testFilterData() {
-    Config config = new Config();
-    config.remoteConfig = false;
-    Notifier notifier = new Notifier(config);
-
-    notifier.addFilter(
+    NotifierTest.notifier.addFilter(
         (Notice notice) -> {
           notice.setContext("environment", "test");
           return notice;
         });
 
-    Notice notice = notifier.reportSync(this.exc);
+    Notice notice =  NotifierTest.notifier.reportSync(this.exc);
     assertNotNull(notice.exception);
     assertEquals(
         "java.io.IOException: unauthorized: project id or key are wrong",
@@ -75,7 +62,7 @@ public class NotifierTest {
   @Test
   public void testReportAsync() {
     try {
-      NotifierTest.notifier.report(this.exc).get();
+       NotifierTest.notifier.report(this.exc).get();
       fail("expected an exception");
     } catch (Throwable e) {
       e = e.getCause();
@@ -85,8 +72,8 @@ public class NotifierTest {
 
   @Test
   public void testReportServerDown() {
-    NotifierTest.notifier.setHost("https://google.com");
-    Notice notice = NotifierTest.notifier.reportSync(this.exc);
+     NotifierTest.notifier.setHost("https://google.com");
+    Notice notice =  NotifierTest.notifier.reportSync(this.exc);
     assertNotNull(notice.exception);
     assertEquals(
         "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $",
@@ -95,22 +82,21 @@ public class NotifierTest {
 
   @Test
   public void testFilterNull() {
-    NotifierTest.notifier.addFilter(
+     NotifierTest.notifier.addFilter(
         (Notice notice) -> {
           return null;
         });
 
-    Notice notice = NotifierTest.notifier.reportSync(this.exc);
+    Notice notice =  NotifierTest.notifier.reportSync(this.exc);
     assertNull(notice);
   }
 
   @Test
   public void testRateLimit() {
-    
     String apiURL = "/api/v3/projects/0/notices";
 
     notifier.setHost("http://localhost:8080");
-   // long utime = System.currentTimeMillis() / 1000L;
+    long utime = System.currentTimeMillis() / 1000L;
     stubFor(
         post(urlEqualTo(apiURL))
             .willReturn(
@@ -127,12 +113,5 @@ public class NotifierTest {
     }
 
     verify(1, postRequestedFor(urlEqualTo(apiURL)));
-
-  }
-
-  @AfterAll
-  public static void closeWireMockServer()
-  {
-    wireMockServer.stop();
   }
 }

@@ -1,18 +1,14 @@
 package io.airbrake.javabrake;
 
-//import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.junit.Test;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 
 public class TruncatorTest {
