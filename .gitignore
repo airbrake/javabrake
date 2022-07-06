@@ -1,6 +1,7 @@
 .gradle
 build
 .ackrc
-.DS_Store
 bin
+target
+.DS_Store
 .vscode
