@@ -1,3 +1,6 @@
 .gradle
 build
 .ackrc
+bin
+target
+.DS_Store
