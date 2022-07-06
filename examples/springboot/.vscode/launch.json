@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-WeatherApplication<weather>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "io.airbrake.weather.WeatherApplication",
+            "projectName": "weather",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

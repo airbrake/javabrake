@@ -4,3 +4,5 @@ build
 bin
 target
 .DS_Store
+.vscode
+

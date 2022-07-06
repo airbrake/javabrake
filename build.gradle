@@ -3,20 +3,24 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
   }
 }
 
-plugins {
-    id 'com.jfrog.bintray' version '1.8.5'
-}
+ plugins {
+     id 'java'
+     id 'java-library'
+     id 'maven-publish'  
+     id 'signing'
+ }
 
-apply plugin: 'maven'
-apply plugin: 'java-library'
-apply plugin: 'io.codearte.nexus-staging'
+ apply plugin: 'io.codearte.nexus-staging'
 
 group = 'io.airbrake'
-version = '0.2.4'
+version = '0.2.5'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 
 if (project.hasProperty('signing.keyId')) {
   apply plugin: 'signing'
@@ -26,17 +30,19 @@ if (project.hasProperty('signing.keyId')) {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
     implementation 'com.google.code.gson:gson:2.8.6'
+    // https://mvnrepository.com/artifact/com.tdunning/t-digest
+    implementation group: 'com.tdunning', name: 't-digest', version: '3.3'
+
     api 'com.google.code.findbugs:jsr305:3.0.2'
-
-    testImplementation 'com.github.tomakehurst:wiremock:2.7.1'
-
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'com.github.tomakehurst:wiremock:2.27.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    //   testImplementation 'junit:junit:4.13'
 }
 
 test {
@@ -50,103 +56,73 @@ test {
     }
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    configurations = ['archives']
-    publish = true
-    override = true
-    pkg {
-        repo = 'maven'
-        name = project.name
-        userOrg = 'airbrake'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/airbrake/javabrake.git'
-        version {
-            name = project.version
-            desc = 'Airbrake notifier for Java'
-            vcsTag = project.version
-        }
-    }
-}
+publishing {
+    publications{
+       
+        mavenJava(MavenPublication){
 
-if (project.hasProperty('ossrhUsername')) {
-  uploadArchives {
-    repositories {
-      mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            group = 'io.airbrake'
+            artifactId = 'javabrake'
+            version = '0.2.5'
+            description = 'javabrake'
+            from(components.java) 
 
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-          authentication(userName: ossrhUsername, password: ossrhPassword)
-        }
 
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-          authentication(userName: ossrhUsername, password: ossrhPassword)
-        }
-
-        pom.project {
-          name project.name
-          packaging 'jar'
-          description 'Airbrake notifier for Java'
-          url 'https://airbrake.io'
-
-          scm {
-            connection 'https://github.com/airbrake/javabrake.git'
-            developerConnection 'https://github.com/airbrake/javabrake.git'
-            url 'https://github.com/airbrake/javabrake'
-          }
-
-          licenses {
-            license {
-              name 'MIT License'
-              url 'https://opensource.org/licenses/MIT'
-            }
-          }
-
-          developers {
-            developer {
-              id 'vmihailenco'
-              name 'Vladimir Mihailenco'
-              email 'vladimir.webdev@gmail.com'
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-task createPom {
-    doLast {
-        pom {
-            project {
-                groupId project.group
-                artifactId project.name
-                version project.version
-
-                inceptionYear '2017'
-                licenses {
-                    license {
-                        name 'MIT License'
-                        url 'https://opensource.org/licenses/MIT'
+            pom{
+                name = 'javabrake'
+                url = 'https://github.com/airbrake/javabrake'
+                description = 'javabrake'           
+            licenses {
+                license {
+                     name = 'MIT License'
+                     url = 'https://opensource.org/licenses/MIT'
                     }
                 }
+            developers {
+                developer {
+                    id = 'sumitjoshi1989'
+                    name = 'Sumit Joshi'
+                    email = 'joshisumitsunil@gmail.com'
+                    }
+                }
+            scm {
+                connection = 'scm:git:git:github.com/airbrake/javabrake.git'
+                developerConnection = 'scm:git:ssh://github.com/airbrake/javabrake.git'
+                url = 'https://github.com/airbrake/javabrake'
+             }
+
             }
-        }.writeTo("pom.xml")
+        }
     }
+    repositories{
+            // maven{
+           
+            //     name = 'OSSRH'
+            //     url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            //     credentials {
+            //         username = project.properties["ossrhUsername"]
+            //         password = project.properties["ossrhPassword"]
+            // }
+            //}
+        maven{
+           
+                name = 'OSSRH'
+                 url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+             //    url = 'https://oss.sonatype.org/content/repositories/snapshots'
+                credentials {
+                    username = project.properties["ossrhUsername"]
+                    password = project.properties["ossrhPassword"]
+            }
+            
+        }        
+    }
+  
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc{
+    
 }
