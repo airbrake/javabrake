@@ -3,15 +3,16 @@ package io.airbrake.javabrake;
 import java.io.IOException;
 
 import java.util.TimerTask;
-import java.util.HashMap;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.HttpUrl;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+
+import ch.qos.logback.classic.Logger;
 
 class PollTask extends TimerTask {
   final private int projectId;
@@ -36,6 +37,10 @@ class PollTask extends TimerTask {
     NOTIFIER_INFO.put("language", "Java/" + System.getProperty("java.version"));
   }
 
+  public String exceptionMessage = "";
+
+  private static final Logger logger = (Logger) LoggerFactory.getLogger(PollTask.class);
+
   public PollTask(
     int projectId,
     String host,
@@ -52,25 +57,37 @@ class PollTask extends TimerTask {
     this.data = new SettingsData(this.projectId, new RemoteConfigJSON());
 
     this.origErrorNotifications = config.errorNotifications;
-  }
-
+ }
   public void run() {
     String response = null;
     try {
       response = this.request();
-    } catch(IOException e) {
-      e.printStackTrace();
+    } catch (IOException e) {
+     exceptionMessage = e.getMessage();
+     logger.info(exceptionMessage);
+     
+     
+     // Logger.getLogger("Airbrake Error").log(Level.INFO, exceptionMessage);
       return;
     }
 
-    try {
-      RemoteConfigJSON json_data = gson.fromJson(response, RemoteConfigJSON.class);
-      this.data.merge(json_data);
-    } catch(JsonSyntaxException e) {
-      e.printStackTrace();
-      return;
+    if(response == null || response.equals(""))
+    {
+    //  Logger.getLogger("Airbrake Error").log(Level.INFO, "Couldn't fetch remote config");
     }
-
+    else
+    if (!response.toLowerCase().contains("accessdenied")) {
+      try {
+        RemoteConfigJSON json_data = gson.fromJson(response, RemoteConfigJSON.class);
+        this.data.merge(json_data);
+      } catch (Exception e) {
+      //  Logger.getLogger("Airbrake Error").log(Level.INFO, e.getMessage());
+        return;
+      }
+    }
+     else {
+    //  Logger.getLogger("Airbrake Config Error").log(Level.INFO, "Please check your config details");
+    }
     this.setErrorHost(this.data);
     this.processErrorNotifications(this.data);
   }
@@ -90,19 +107,22 @@ class PollTask extends TimerTask {
       return response.body().string();
     }
   }
-
+  
   void setErrorHost(SettingsData data) {
-    String remoteErrorHost = this.data.errorHost();
-    if (remoteErrorHost == null) {
-      this.config.errorHost = Config.DEFAULT_ERROR_HOST;
-    } else {
-      this.config.errorHost = remoteErrorHost;
-    }
-
+    this.config.errorHost = this.getErrorHost();
     this.asyncSender.setHost(this.config.errorHost);
     this.syncSender.setHost(this.config.errorHost);
   }
 
+
+  public String getErrorHost() {
+    String remoteErrorHost = this.data.errorHost();
+    if (remoteErrorHost == null) {
+      return Config.DEFAULT_ERROR_HOST;
+    } else {
+     return remoteErrorHost;
+    }    
+  }
   void processErrorNotifications(SettingsData data) {
     if (!this.origErrorNotifications) {
       return;
