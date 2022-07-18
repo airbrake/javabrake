@@ -1,21 +1,12 @@
 package io.airbrake.javabrake;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.assertj.core.api.Assertions.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import java.util.HashMap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
-
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
-import ch.qos.logback.core.read.ListAppender;
 
 public class PollTaskTest {
 
@@ -29,16 +20,10 @@ public class PollTaskTest {
     NOTIFIER_INFO.put("os", System.getProperty("os.name") + "/" + System.getProperty("os.version"));
     NOTIFIER_INFO.put("language", "Java/" + System.getProperty("java.version"));
   }
-  
-  private static ListAppender<ILoggingEvent> appender;
-  private static Logger appLogger = (Logger) LoggerFactory.getLogger(PollTask.class);
 
   @BeforeAll
   public static void init() {
-    appender = new ListAppender<>();
-    appender.start();
-    appLogger.addAppender(appender);
-    
+
   wireMockServer = new WireMockServer(); // No-args constructor will start on port 8080, no HTTPS
 
   wireMockServer.start();
@@ -92,35 +77,11 @@ public class PollTaskTest {
      withQueryParam("notifier_name", containing("a")).
      willReturn(aResponse().withFixedDelay(30000)));
 
-    // SettingsData data = new SettingsData(0, new RemoteConfigJSON());
-    // HttpUrl.Builder httpBuilder = HttpUrl.parse(data.configRoute("http://localhost:8080/some/thing"))
-    //     .newBuilder();
-    // for (HashMap.Entry<String, String> param : NOTIFIER_INFO.entrySet()) {
-    //   httpBuilder.addQueryParameter(param.getKey(), param.getValue());
-    // }
-    // OkHttpClient client = new OkHttpClient.Builder().build();
-
-    // Request request = new Request.Builder()
-    //     .url(httpBuilder.build())
-    //     .build();
-
-    // try {
-    //   Response response = client.newCall(request).execute();
-
-    //   responseString = response.body().string();
-    // } catch (Exception e) {
-    //   // TODO Auto-generated catch block
-    //   // e.printStackTrace();
-    //   assertEquals(SocketTimeoutException.class, e.getClass());
-    // }
-    // assertEquals(responseString, "");
-
     PollTask oPollTask = new PollTask(0, "http://localhost:8080/some/thing", config, asyncSender, syncSender);
    
     oPollTask.run();
   
-    //assertEquals(oPollTask.exceptionMessage.toLowerCase(), "read timed out");
-    assertThat(appender.list).extracting("message").contains("timeout");
+    assertTrue(oPollTask.getErrorHost().equals(Config.DEFAULT_ERROR_HOST));
   }
 
 
@@ -155,7 +116,6 @@ public class PollTaskTest {
 
   @AfterAll
   public static void closeWireMockServer() {
-    appLogger.detachAppender(appender);
   wireMockServer.stop();
   }
 }
