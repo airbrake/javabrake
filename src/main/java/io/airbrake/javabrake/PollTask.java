@@ -32,8 +32,6 @@ class PollTask extends TimerTask {
     NOTIFIER_INFO.put("language", "Java/" + System.getProperty("java.version"));
   }
 
-  public String exceptionMessage = "";
-
   public PollTask(
       int projectId,
       String host,
