@@ -54,7 +54,6 @@ class PollTask extends TimerTask {
     try {
       response = this.request();
     } catch (IOException e) {
-
       this.setErrorHost(this.data);
       this.processErrorNotifications(this.data);
       return;
