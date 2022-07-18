@@ -1,17 +1,13 @@
 package io.airbrake.javabrake;
 
 import java.io.IOException;
-
 import java.util.TimerTask;
 import java.util.HashMap;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.HttpUrl;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 class PollTask extends TimerTask {
   final private int projectId;
@@ -37,12 +33,11 @@ class PollTask extends TimerTask {
   }
 
   public PollTask(
-    int projectId,
-    String host,
-    Config config,
-    AsyncSender asyncSender,
-    SyncSender syncSender
-  ) {
+      int projectId,
+      String host,
+      Config config,
+      AsyncSender asyncSender,
+      SyncSender syncSender) {
     this.projectId = projectId;
     this.host = host;
     this.config = config;
@@ -58,16 +53,18 @@ class PollTask extends TimerTask {
     String response = null;
     try {
       response = this.request();
-    } catch(IOException e) {
-      e.printStackTrace();
+    } catch (IOException e) {
+      this.setErrorHost(this.data);
+      this.processErrorNotifications(this.data);
       return;
     }
 
     try {
       RemoteConfigJSON json_data = gson.fromJson(response, RemoteConfigJSON.class);
       this.data.merge(json_data);
-    } catch(JsonSyntaxException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      this.setErrorHost(this.data);
+      this.processErrorNotifications(this.data);
       return;
     }
 
@@ -77,14 +74,14 @@ class PollTask extends TimerTask {
 
   String request() throws IOException {
     HttpUrl.Builder httpBuilder = HttpUrl.parse(this.data.configRoute(this.host))
-      .newBuilder();
+        .newBuilder();
     for (HashMap.Entry<String, String> param : NOTIFIER_INFO.entrySet()) {
       httpBuilder.addQueryParameter(param.getKey(), param.getValue());
     }
 
     Request request = new Request.Builder()
-      .url(httpBuilder.build())
-      .build();
+        .url(httpBuilder.build())
+        .build();
 
     try (Response response = client.newCall(request).execute()) {
       return response.body().string();
@@ -92,15 +89,18 @@ class PollTask extends TimerTask {
   }
 
   void setErrorHost(SettingsData data) {
-    String remoteErrorHost = this.data.errorHost();
-    if (remoteErrorHost == null) {
-      this.config.errorHost = Config.DEFAULT_ERROR_HOST;
-    } else {
-      this.config.errorHost = remoteErrorHost;
-    }
-
+    this.config.errorHost = this.getErrorHost();
     this.asyncSender.setHost(this.config.errorHost);
     this.syncSender.setHost(this.config.errorHost);
+  }
+
+  public String getErrorHost() {
+    String remoteErrorHost = this.data.errorHost();
+    if (remoteErrorHost == null) {
+      return Config.DEFAULT_ERROR_HOST;
+    } else {
+      return remoteErrorHost;
+    }
   }
 
   void processErrorNotifications(SettingsData data) {
