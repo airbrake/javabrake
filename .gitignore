@@ -5,5 +5,5 @@ bin
 target
 .DS_Store
 .vscode
-examples/springboot/target
-examples/springboot/.vscode
+/examples/springboot/target
+/examples/springboot/.vscode
