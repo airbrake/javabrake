@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import io.airbrake.javabrake.Notifier;
 
-@Service("WeatherService")
+@Service
 public class WeatherService {
 
   
@@ -23,7 +23,7 @@ public class WeatherService {
     @Autowired
     Notifier notifier; 
 
-    public String GetDate() {
+    public String getDate() {
         String url = baseUrl+"/date";
         String resp = this.restTemplate.getForObject(url, String.class);
         long l = Long.parseLong(resp.trim());
@@ -32,7 +32,7 @@ public class WeatherService {
         return d.toString();
     }
 
-    public String GetLocations() {
+    public String getLocations() {
         String url = baseUrl+"/locations";
         String resp = this.restTemplate.getForObject(url, String.class);
         
@@ -41,7 +41,7 @@ public class WeatherService {
 
     //Api is to check location is available or not? 
     //If not then it will given an exception. Exception will get reported to airbrake protal through GlobalExceptionController.
-    public String GetWeather(String location)  {
+    public String getWeather(String location)  {
         String url = baseUrl+"/weather/{location}";
         ResponseEntity<String> resp = new ResponseEntity<>(HttpStatus.OK);
         resp = this.restTemplate.getForEntity(url, String.class, location);
@@ -50,7 +50,7 @@ public class WeatherService {
     }
 
      //Using try-catch exception will get reported to airbrake protal
-    public String GetWeather1(String location)  {
+    public String getWeatherTC(String location)  {
         String url = baseUrl+"/weather/{location}";
         ResponseEntity<String> resp = new ResponseEntity<>(HttpStatus.OK);
         try{
