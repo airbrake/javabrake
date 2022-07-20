@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.airbrake.weather.WeatherApplicationTests
--------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.141 s - in io.airbrake.weather.WeatherApplicationTests
