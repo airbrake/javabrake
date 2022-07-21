@@ -50,7 +50,7 @@ public class WeatherService {
     }
 
      //Using try-catch exception will get reported to airbrake protal
-    public String getWeatherTC(String location)  {
+    public String getWeatherTrtCatch(String location)  {
         String url = baseUrl+"/weather/{location}";
         ResponseEntity<String> resp = new ResponseEntity<>(HttpStatus.OK);
         try{

@@ -2,8 +2,6 @@
 build
 .ackrc
 bin
-target
-.DS_Store
-.vscode
-/examples/springboot/target
-/examples/springboot/.vscode
+**target
+**.DS_Store
+**.vscode
