@@ -37,7 +37,7 @@ public class WeatherController {
     @GetMapping("/weather1/{location}")
     public String weatherTryCatch(@PathVariable String location) {
     
-        return weatherService.getWeatherTC(location);
+        return weatherService.getWeatherTryCatch(location);
       
     }
 }
