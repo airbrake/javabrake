@@ -20,25 +20,25 @@ class WeatherApplicationTests {
 	@Test
 	void getDate() {
 		
-		assertNotNull(weatherService.GetDate());
+		assertNotNull(weatherService.getDate());
 	}
 
 	@Test
 	void getLocations() {
 		
-		assertNotNull(weatherService.GetLocations());
+		assertNotNull(weatherService.getLocations());
 	}
 
 	@Test
 	void getWeather() {
 		
-		assertNotNull(weatherService.GetWeather("austin"));
+		assertNotNull(weatherService.getWeather("austin"));
 	}
 
 	@Test
 	public void checkIfWeatherIsNotAvailable() {
     Exception exception = assertThrows(org.springframework.web.client.HttpClientErrorException.class, () -> {
-        weatherService.GetWeather("boston");
+        weatherService.getWeather("boston");
     });
 
     String expectedMessage = "404 Not Found:";

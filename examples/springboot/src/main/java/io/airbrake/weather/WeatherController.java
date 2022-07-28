@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -15,31 +13,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class WeatherController {
 
     @Autowired
-    WeatherService svc;
+    WeatherService weatherService;
 
     @GetMapping("/date")
     public String date() {
         
-        return svc.GetDate();
+        return weatherService.getDate();
     }
 
     @GetMapping("/locations")
     public String locations() {
        
-        return svc.GetLocations();
+        return weatherService.getLocations();
     }
 
     @GetMapping("/weather/{location}")
     public String weather(@PathVariable String location) {
     
-        return svc.GetWeather(location);
+        return weatherService.getWeather(location);
       
     }
 
     @GetMapping("/weather1/{location}")
-    public String weather1(@PathVariable String location) {
+    public String weatherTryCatch(@PathVariable String location) {
     
-        return svc.GetWeather1(location);
+        return weatherService.getWeatherTryCatch(location);
       
     }
 }

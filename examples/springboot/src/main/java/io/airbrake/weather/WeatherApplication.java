@@ -13,29 +13,28 @@ import io.airbrake.javabrake.Notifier;
 public class WeatherApplication {
 
 	@Value("${airbrake.project.id}")
-    private int projectId;
+	private int projectId;
 
-    @Value("${airbrake.project.key}")
-    private String projectKey;
+	@Value("${airbrake.project.key}")
+	private String projectKey;
 
 	static Notifier notifier;
 
-	
 	public static void main(String[] args) {
 		SpringApplication.run(WeatherApplication.class, args);
 	}
 
-@Bean
-public RestTemplate restTemplate() {
-    	return new RestTemplate();
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
-@Bean
-public Notifier getNotifier() {
+	@Bean
+	public Notifier getNotifier() {
 		Config config = new Config();
 		config.projectId = projectId;
 		config.projectKey = projectKey;
 		notifier = new Notifier(config);
-	    return notifier;
+		return notifier;
 	}
 }
