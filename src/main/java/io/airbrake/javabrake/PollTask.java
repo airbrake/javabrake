@@ -19,6 +19,7 @@ class PollTask extends TimerTask {
   final private SettingsData data;
 
   final private Boolean origErrorNotifications;
+  final private Boolean origAPMNotifications;
 
   final private OkHttpClient client = new OkHttpClient();
   final private Gson gson = new Gson();
@@ -47,6 +48,7 @@ class PollTask extends TimerTask {
     this.data = new SettingsData(this.projectId, new RemoteConfigJSON());
 
     this.origErrorNotifications = config.errorNotifications;
+    this.origAPMNotifications = config.apmNotifications;
   }
 
   public void run() {
@@ -56,6 +58,8 @@ class PollTask extends TimerTask {
     } catch (IOException e) {
       this.setErrorHost(this.data);
       this.processErrorNotifications(this.data);
+      this.setAPMHost(data);
+      this.processAPMNotifications(data);
       return;
     }
 
@@ -65,11 +69,15 @@ class PollTask extends TimerTask {
     } catch (Exception e) {
       this.setErrorHost(this.data);
       this.processErrorNotifications(this.data);
+      this.setAPMHost(data);
+      this.processAPMNotifications(data);
       return;
     }
 
     this.setErrorHost(this.data);
     this.processErrorNotifications(this.data);
+    this.setAPMHost(data);
+    this.processAPMNotifications(data);
   }
 
   String request() throws IOException {
@@ -90,8 +98,8 @@ class PollTask extends TimerTask {
 
   void setErrorHost(SettingsData data) {
     this.config.errorHost = this.getErrorHost();
-    this.asyncSender.setHost(this.config.errorHost);
-    this.syncSender.setHost(this.config.errorHost);
+    this.asyncSender.setErrorHost(this.config.errorHost);
+    this.syncSender.setErrorHost(this.config.errorHost);
   }
 
   public String getErrorHost() {
@@ -109,5 +117,25 @@ class PollTask extends TimerTask {
     }
 
     this.config.errorNotifications = data.errorNotifications();
+  }
+
+  void setAPMHost(SettingsData data) {
+    String remoteHost = this.data.apmHost();
+    if (remoteHost == null) {
+      this.config.apmHost = Config.DEFAULT_ERROR_HOST;
+    } else {
+      this.config.apmHost = remoteHost;
+    }
+
+    this.asyncSender.setAPMHost(this.config.apmHost);
+    this.syncSender.setAPMHost(this.config.apmHost);
+  }
+
+  void processAPMNotifications(SettingsData data) {
+    if (!this.origAPMNotifications) {
+      return;
+    }
+
+    this.config.apmNotifications = data.performanceStats();
   }
 }

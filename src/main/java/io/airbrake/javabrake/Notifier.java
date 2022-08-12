@@ -1,17 +1,16 @@
 package io.airbrake.javabrake;
 
 import java.util.concurrent.Future;
-// import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-// import java.util.HashMap;
-// import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
-/** Airbrake notifier. */
+//** Airbrake notifier. */
 public class Notifier {
   AsyncSender asyncSender;
   SyncSender syncSender;
+
+  protected static List<Object> routes = new ArrayList<>();
 
   final List<NoticeHook> hooks = new ArrayList<>();
   final List<NoticeFilter> filters = new ArrayList<>();
@@ -28,7 +27,11 @@ public class Notifier {
     this.syncSender = new OkSyncSender(config);
 
     if (config.errorHost != null) {
-      this.setHost(config.errorHost);
+      this.setErrorHost(config.errorHost);
+    }
+
+    if (config.apmHost != null) {
+      this.setAPMHost(config.apmHost);
     }
 
     if (Airbrake.notifier == null) {
@@ -46,9 +49,21 @@ public class Notifier {
     }
   }
 
-  public Notifier setHost(String host) {
-    this.asyncSender.setHost(host);
-    this.syncSender.setHost(host);
+// public Config getConfig() {
+//     return config;
+// }
+
+public Notifier setErrorHost(String host) {
+  this.config.errorHost = host;
+  this.asyncSender.setErrorHost(host);
+  this.syncSender.setErrorHost(host);
+  return this;
+}
+
+  public Notifier setAPMHost(String host) {
+    this.config.apmHost = host;
+    this.asyncSender.setAPMHost(host);
+    this.syncSender.setAPMHost(host);
     return this;
   }
 
