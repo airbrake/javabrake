@@ -26,7 +26,6 @@ class RemoteSettings {
     this.config = config;
     this.asyncSender = asyncSender;
     this.syncSender = syncSender;
-
     this.timer = new Timer();
   }
 

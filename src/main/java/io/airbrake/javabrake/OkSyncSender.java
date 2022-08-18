@@ -21,7 +21,7 @@ public class OkSyncSender extends OkSender implements SyncSender {
       return notice;
     }
 
-    Call call = okhttp.newCall(this.buildRequest(notice));
+    Call call = okhttp.newCall(this.buildErrorRequest(notice));
     try (Response resp = call.execute()) {
       this.parseResponse(resp, notice);
     } catch (IOException e) {

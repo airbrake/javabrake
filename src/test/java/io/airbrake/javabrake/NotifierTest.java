@@ -85,12 +85,17 @@ public class NotifierTest {
 
   @Test
   public void testReportServerDown() {
-    NotifierTest.notifier.setHost("https://google.com");
+    NotifierTest.notifier.setErrorHost("https://google.com");
     Notice notice = NotifierTest.notifier.reportSync(this.exc);
     assertNotNull(notice.exception);
-    assertEquals(
-        "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $",
-        notice.exception.toString());
+    // assertEquals(
+    //     "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $",
+    //     notice.exception.toString());
+
+        
+        assertEquals(
+          "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $",
+          notice.exception.toString());
   }
 
   @Test
@@ -109,7 +114,7 @@ public class NotifierTest {
     
     String apiURL = "/api/v3/projects/0/notices";
 
-    notifier.setHost("http://localhost:8080");
+    notifier.setErrorHost("http://localhost:8080");
    // long utime = System.currentTimeMillis() / 1000L;
     stubFor(
         post(urlEqualTo(apiURL))
