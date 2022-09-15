@@ -6,26 +6,38 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 //** Airbrake notifier. */
-public class Notifier {
+public class Notifier{
   AsyncSender asyncSender;
   SyncSender syncSender;
 
   protected static List<Object> routes = new ArrayList<>();
+  protected static List<Object> routesBreakdown = new ArrayList<>();
+  protected static List<Object> queues = new ArrayList<>();
+	protected static List<Object> queries = new ArrayList<>();
+
+  public Routes route;
+  public Queries query;
 
   final List<NoticeHook> hooks = new ArrayList<>();
   final List<NoticeFilter> filters = new ArrayList<>();
 
-  final private Config config;
+  //final private Config config;
+  protected static Config config;
+
+  protected static Notifier notifier;
 
   /**
    * @param config Configures the notifier
    */
-  public Notifier(Config config) {
-    this.config = config;
+   public Notifier(Config config) {
+    Notifier.config = config;
 
     this.asyncSender = new OkAsyncSender(config);
     this.syncSender = new OkSyncSender(config);
 
+    route = new Routes();
+    query = new Queries();
+  
     if (config.errorHost != null) {
       this.setErrorHost(config.errorHost);
     }
@@ -40,28 +52,34 @@ public class Notifier {
 
     if (config.remoteConfig) {
       new RemoteSettings(
-        config.projectId,
-        "https://notifier-configs.airbrake.io",
-        config,
-        this.asyncSender,
-        this.syncSender
-      ).poll();
+          config.projectId,
+          "https://notifier-configs.airbrake.io",
+          config,
+          this.asyncSender,
+          this.syncSender).poll();
     }
   }
 
-// public Config getConfig() {
-//     return config;
-// }
+  public static Notifier getInstance(Config config)
+  {
+    if(notifier == null)
+      return new Notifier(config);
+    else
+    {
+      Notifier.config = config;
+      return notifier;  
+    }    
+  }
 
-public Notifier setErrorHost(String host) {
-  this.config.errorHost = host;
-  this.asyncSender.setErrorHost(host);
-  this.syncSender.setErrorHost(host);
-  return this;
-}
+  public Notifier setErrorHost(String host) {
+    config.errorHost = host;
+    this.asyncSender.setErrorHost(host);
+    this.syncSender.setErrorHost(host);
+    return this;
+  }
 
   public Notifier setAPMHost(String host) {
-    this.config.apmHost = host;
+    config.apmHost = host;
     this.asyncSender.setAPMHost(host);
     this.syncSender.setAPMHost(host);
     return this;
@@ -97,6 +115,7 @@ public Notifier setErrorHost(String host) {
   /** Asynchronously sends a Notice to Airbrake. */
   public Future<Notice> send(Notice notice) {
     notice = this.filterNotice(notice);
+ 
     CompletableFuture<Notice> future = this.asyncSender.send(notice);
 
     final Notice finalNotice = notice;

@@ -3,7 +3,7 @@ package io.airbrake.javabrake;
 public class RouteMetric extends Metrics {
     public static String HTTP_HANDLER = "http.handler";
     String method;
-    String route;
+    public String route;
     int statusCode;
     String contentType;
 

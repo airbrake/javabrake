@@ -5,12 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
+@TestMethodOrder(OrderAnnotation.class)
 public class RouteTest {
   static WireMockServer wireMockServer = null;
   static Notifier notifier;
@@ -45,46 +50,41 @@ public class RouteTest {
   }
 
   @Test
+  @Order(1)
   public void testRoutesNotifyTryCatch() {
 
-    config.apmNotifications = false;
+    config.performanceStats = false;
     RouteMetric metric = new RouteMetric("GET", "/test", 200, "application/json");
     try {
-      RouteStats.notify(metric,config);
-    } catch (NullPointerException e) {
-      assertTrue(true);
+      notifier.route.notify(metric);
+    } 
+    // catch (NullPointerException e) {
+    //   //assertTrue(true);
+    // }
+    finally {
+      assertEquals(Routes.status,"performanceStats is disabled");
     }
   }
 
   @Test
-  public void testRoutesNotify() {
+  @Order(2)
+  public void testQueriesNotifyTryCatch() {
 
-    config.apmNotifications = true;
-    config.projectId = 0;
-    notifier.setAPMHost("http://localhost:8080");
+    config.performanceStats = false;
     RouteMetric metric = new RouteMetric("GET", "/test", 200, "application/json");
-
-    RouteMetric.FLUSH_PERIOD = 50;
-    metric.endTime = new Date();
-
-    stubFor(post(urlEqualTo("/api/v5/projects/0/routes-stats")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{}")
-            .withStatus(200)));
-
     try {
-      RouteStats.notify(metric,config);
-      Thread.sleep(5000);
-    } catch (Exception e) {
-      assertTrue(false);
+      notifier.route.notify(metric);
+    } finally {
+      assertEquals(Routes.status, "performanceStats is disabled");
     }
-
-    assertEquals(RouteStats.exception, null);
   }
 
+
   @Test
+  @Order(3)
   public void testRouteNotifyException() {
 
-    config.apmNotifications = true;
+    config.performanceStats = true;
     config.projectId = 1;
     notifier.setAPMHost("http://localhost:8080");
 
@@ -95,13 +95,13 @@ public class RouteTest {
             .withStatus(200)));
 
     try {
-      RouteStats.notify(metric,config);
+      notifier.route.notify(metric);
       Thread.sleep(5000);
 
     } catch (Exception e) {
       assertTrue(false);
     }
-    assertEquals(RouteStats.exception.toString(), "java.lang.NullPointerException");
+    assertEquals(Routes.status, "java.lang.NullPointerException");
   }
 
   @AfterAll

@@ -134,7 +134,6 @@ class TdigestStatGroup extends TdigestStat {
         for (Map.Entry<String, Long> entry : group.entrySet()) {
             this.addGroup(entry.getKey(), group.get(entry.getKey()));
         }
-
     }
 
     public void addGroup(String name, long ms) {
@@ -143,7 +142,6 @@ class TdigestStatGroup extends TdigestStat {
             stat = new TdigestStat();
             this.groups.put(name, stat);
         }
-
         stat.add(ms);
     }
 

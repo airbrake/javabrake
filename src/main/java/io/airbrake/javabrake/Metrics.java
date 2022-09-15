@@ -7,8 +7,8 @@ import java.util.Map;
 public class Metrics {
     public static int FLUSH_PERIOD = 15;
 
-    Date startTime = new Date();
-    Date endTime;
+    public Date startTime = new Date();
+    public Date endTime;
     Map<String, Span> spans = new HashMap<>();
     Span currSpan;
     Map<String, Long> groups = new HashMap<>();

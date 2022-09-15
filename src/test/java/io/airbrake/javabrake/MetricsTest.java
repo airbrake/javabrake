@@ -36,7 +36,7 @@ public class MetricsTest {
 
         assertTrue((metric.spans.get("c").endTime.getTime()-metric.spans.get("c").startTime.getTime())==metric.spans.get("c").dur);
         assertTrue((metric.spans.get("c1").endTime.getTime()-metric.spans.get("c1").startTime.getTime())==metric.spans.get("c1").dur);
-        assertTrue((metric.endTime.getTime()-metric.startTime.getTime())>10000);
+        assertTrue((metric.endTime.getTime()-metric.startTime.getTime())<12000);
     }
 
 }

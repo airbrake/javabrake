@@ -9,5 +9,6 @@ public interface AsyncSender {
   void setAPMHost(String host);
 
   CompletableFuture<Notice> send(Notice notice);
-  CompletableFuture<Response> sendRouteStats(Routes object);
+  CompletableFuture<Response> send(Routes object);
+  CompletableFuture<Response> send(Queries object);
 }

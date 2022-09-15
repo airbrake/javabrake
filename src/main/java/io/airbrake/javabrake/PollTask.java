@@ -48,7 +48,7 @@ class PollTask extends TimerTask {
     this.data = new SettingsData(this.projectId, new RemoteConfigJSON());
 
     this.origErrorNotifications = config.errorNotifications;
-    this.origAPMNotifications = config.apmNotifications;
+    this.origAPMNotifications = config.performanceStats;
   }
 
   public void run() {
@@ -58,8 +58,8 @@ class PollTask extends TimerTask {
     } catch (IOException e) {
       this.setErrorHost(this.data);
       this.processErrorNotifications(this.data);
-      this.setAPMHost(data);
-      this.processAPMNotifications(data);
+      this.setAPMHost(this.data);
+      this.processAPMNotifications(this.data);
       return;
     }
 
@@ -69,15 +69,15 @@ class PollTask extends TimerTask {
     } catch (Exception e) {
       this.setErrorHost(this.data);
       this.processErrorNotifications(this.data);
-      this.setAPMHost(data);
-      this.processAPMNotifications(data);
+      this.setAPMHost(this.data);
+      this.processAPMNotifications(this.data);
       return;
     }
 
     this.setErrorHost(this.data);
     this.processErrorNotifications(this.data);
-    this.setAPMHost(data);
-    this.processAPMNotifications(data);
+    this.setAPMHost(this.data);
+    this.processAPMNotifications(this.data);
   }
 
   String request() throws IOException {
@@ -136,6 +136,6 @@ class PollTask extends TimerTask {
       return;
     }
 
-    this.config.apmNotifications = data.performanceStats();
+    this.config.performanceStats = data.performanceStats();
   }
 }

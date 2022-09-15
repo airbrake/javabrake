@@ -24,7 +24,6 @@ public class Notice {
   /** https://github.com/google/gson/blob/master/UserGuide.md#java-modifier-exclusion **/
   /** Exception occurred reporting this Notice. */
   public transient Throwable exception;
-
   public List<NoticeError> errors;
   @Nullable public Map<String, Object> context;
   @Nullable public Map<String, Object> params;

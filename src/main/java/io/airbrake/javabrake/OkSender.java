@@ -141,7 +141,7 @@ public class OkSender {
       return;
     }
 
-    if (resp.code() == 401) {
+    if (resp.code() == 401 || resp.code() == 403) {
       notice.exception = ipUnauthorizedException;
       return;
     }
