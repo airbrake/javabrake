@@ -37,9 +37,6 @@ class Truncator {
         return "[Truncated Map]";
       }
 
-      // Map<String, Object> map = (Map<String, Object>) obj;
-      // return this.truncateMap(map, depth);
-
       Map<String, Object> map = gson.fromJson(gson.toJson(obj), new TypeToken<Map<String, Object>>(){}.getType());
       return this.truncateMap(map, depth);
     }
@@ -49,8 +46,6 @@ class Truncator {
       if (depth > this.maxDepth) {
         return "[Truncated List]";
       }
-
-      // List<Object> list = (List<Object>) obj;
 
       List<Object> list = gson.fromJson(gson.toJson(obj), new TypeToken<List<Object>>(){}.getType());
 

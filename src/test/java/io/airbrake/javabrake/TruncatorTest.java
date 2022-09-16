@@ -37,12 +37,6 @@ public class TruncatorTest {
     map = t.truncateMap(map, 0);
     assertEquals("wor", map.get("hello"));
 
-    // submap = (Map<String, Object>) map.get("submap");
-    // assertEquals("wor", submap.get("hello"));
-
-     //list = (List<String>) map.get("list");
-    // assertEquals("wor", list.get(0));
-
     submap = gson.fromJson(gson.toJson(map.get("submap")), new TypeToken<Map<String, Object>>(){}.getType());
     assertEquals("wor", submap.get("hello"));
 
@@ -75,9 +69,6 @@ public class TruncatorTest {
     Truncator t = new Truncator(0);
     map = t.truncateMap(map, 0);
 
-    // Map<String, Object> v = (Map<String, Object>) map.get("submap");
-    // assertEquals("world", v.get("hello"));
-
     Map<String, Object> v = gson.fromJson(gson.toJson(map.get("submap")), new TypeToken<Map<String, Object>>(){}.getType());
     assertEquals("world", v.get("hello"));
   }
@@ -92,11 +83,6 @@ public class TruncatorTest {
     list.add("v3");
     list.add("v4");
     map.put("list", list);
-
-    // Truncator t = new Truncator(0);
-    // t.maxListSize = 3;
-    // map = t.truncateMap(map, 0);
-    // assertEquals(3, list.size());
 
     Truncator t = new Truncator(0);
     t.maxListSize = 3;
@@ -125,8 +111,6 @@ public class TruncatorTest {
     t.maxDepth = 2;
 
     map = t.truncateMap(map, 0);
-    // submap = (Map<String, Object>) map.get("submap");
-    // submap2 = (Map<String, Object>) submap.get("submap2");
 
     submap = gson.fromJson(gson.toJson(map.get("submap")), new TypeToken<Map<String, Object>>(){}.getType());
     submap2 = gson.fromJson(gson.toJson(submap.get("submap2")), new TypeToken<Map<String, Object>>(){}.getType());

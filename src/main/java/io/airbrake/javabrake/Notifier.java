@@ -21,7 +21,6 @@ public class Notifier{
   final List<NoticeHook> hooks = new ArrayList<>();
   final List<NoticeFilter> filters = new ArrayList<>();
 
-  //final private Config config;
   protected static Config config;
 
   protected static Notifier notifier;

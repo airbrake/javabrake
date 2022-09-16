@@ -35,7 +35,6 @@ public class OkSender {
   final Config config;
   final int projectId;
   final String projectKey;
-  //String url;
   String apmUrl;
   String errorUrl;
 
@@ -53,10 +52,6 @@ public class OkSender {
     OkSender.okhttp = okhttp;
   }
 
-  // public void setHost(String host) {
-  //   this.url = this.buildUrl(host);
-  // }
-
   public void setErrorHost(String host) {
     this.errorUrl = this.buildErrorUrl(host);
   }
@@ -64,16 +59,6 @@ public class OkSender {
   public void setAPMHost(String host) {
    this.apmUrl = this.buildAPMUrl(host);
  }
-
-  // Request buildRequest(Notice notice) {
-  //   String data = this.noticeJson(notice);
-  //   RequestBody body = RequestBody.create(data,JSONType);
-  //   return new Request.Builder()
-  //       .header("Authorization", "Bearer " + this.projectKey)
-  //       .url(this.url)
-  //       .post(body)
-  //       .build();
-  // }
 
   Request buildErrorRequest(Notice notice) {
     this.errorUrl = this.buildErrorUrl(config.errorHost);
@@ -87,9 +72,8 @@ public class OkSender {
   }
 
   Request buildAPMRequest(String json,String method) {
-    this.apmUrl = this.buildAPMUrl(config.apmHost);
+    this.apmUrl = this.buildAPMUrl(method);
     RequestBody body = RequestBody.create(json,JSONType);
-    this.apmUrl = this.apmUrl+method;
     return new Request.Builder()
         .header("Authorization", "Bearer " + this.projectKey)
         .url(this.apmUrl)
@@ -117,16 +101,12 @@ public class OkSender {
     return data;
   }
 
-  // String buildUrl(String host) {
-  //   return String.format("%s/api/v3/projects/%d/notices", host, this.projectId);
-  // }
-
   String buildErrorUrl(String host) {
     return String.format("%s/api/v3/projects/%d/notices", host, this.projectId);
   }
 
-  String buildAPMUrl(String host) {
-    return String.format("%s/api/v5/projects/%d/", host, this.projectId);
+  String buildAPMUrl(String path) {
+    return String.format("%s/api/v5/projects/%d/%s", config.apmHost, this.projectId, path);
   }
 
   void parseResponse(Response resp, Notice notice) {

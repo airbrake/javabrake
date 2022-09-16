@@ -122,7 +122,7 @@ class PollTask extends TimerTask {
   void setAPMHost(SettingsData data) {
     String remoteHost = this.data.apmHost();
     if (remoteHost == null) {
-      this.config.apmHost = Config.DEFAULT_ERROR_HOST;
+      this.config.apmHost = Config.DEFAULT_APM_HOST;
     } else {
       this.config.apmHost = remoteHost;
     }

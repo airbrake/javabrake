@@ -14,13 +14,13 @@ public class Queries {
     String environment;
     List<Object> queries;
 
-    transient String url;
+    transient String path;
     static transient String status = null;
     
-    Queries(String environment, List<Object> queries, String url) {
+    Queries(String environment, List<Object> queries, String path) {
         this.environment = environment;
         this.queries = queries;
-        this.url = url;
+        this.path = path;
     }
 
     public Queries() {

@@ -77,9 +77,8 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   @Override
   public CompletableFuture<Response> send(Routes object) {
     CompletableFuture<Response> future = new CompletableFuture<>();
-    //OkAsyncSender sender = this;
     okhttp
-        .newCall(this.buildAPMRequest(gson.toJson(object, Routes.class), object.url))
+        .newCall(this.buildAPMRequest(gson.toJson(object, Routes.class), object.path))
         .enqueue(
             new Callback() {
               @Override
@@ -101,9 +100,8 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   @Override
   public CompletableFuture<Response> send(Queries object) {
     CompletableFuture<Response> future = new CompletableFuture<>();
-    //OkAsyncSender sender = this;
     okhttp
-        .newCall(this.buildAPMRequest(gson.toJson(object, Queries.class), object.url))
+        .newCall(this.buildAPMRequest(gson.toJson(object, Queries.class), object.path))
         .enqueue(
             new Callback() {
               @Override
@@ -114,8 +112,7 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
 
               @Override
               public void onResponse(Call call, Response resp) {
-                //NoticeCode data = sender.parseJson(resp, NoticeCode.class);
-                //System.out.println(data.message);
+
                 future.complete(resp);
 
               }

@@ -14,14 +14,14 @@ public class Routes {
     String environment;
     List<Object> routes = new ArrayList<>();
 
-    transient String url;
+    transient String path;
     static transient String status = null;
     String date;
 
-    Routes(String environment, List<Object> routes, String url) {
+    Routes(String environment, List<Object> routes, String path) {
         this.environment = environment;
         this.routes = routes;
-        this.url = url;
+        this.path = path;
     }
 
     public Routes() {
