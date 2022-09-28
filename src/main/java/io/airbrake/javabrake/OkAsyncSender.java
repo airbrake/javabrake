@@ -44,7 +44,7 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
 
     OkAsyncSender sender = this;
     okhttp
-        .newCall(this.buildRequest(notice))
+        .newCall(this.buildErrorRequest(notice))
         .enqueue(
             new Callback() {
               @Override
@@ -65,5 +65,74 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
               }
             });
     return future;
+  }
+
+  @Override
+  public CompletableFuture<Response> send(Routes object) {
+    CompletableFuture<Response> future = new CompletableFuture<>();
+    okhttp
+        .newCall(this.buildAPMRequest(gson.toJson(object, Routes.class), object.path))
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(Call call, IOException e) {
+
+                future.completeExceptionally(e);
+              }
+
+              @Override
+              public void onResponse(Call call, Response resp) {
+                
+                future.complete(resp);
+
+              }
+            });
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<Response> send(Queries object) {
+    CompletableFuture<Response> future = new CompletableFuture<>();
+    okhttp
+        .newCall(this.buildAPMRequest(gson.toJson(object, Queries.class), object.path))
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(Call call, IOException e) {
+
+                future.completeExceptionally(e);
+              }
+
+              @Override
+              public void onResponse(Call call, Response resp) {
+
+                future.complete(resp);
+
+              }
+            });
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<Response> send(Queues object) {
+    CompletableFuture<Response> future = new CompletableFuture<>();
+    okhttp
+    .newCall(this.buildAPMRequest(gson.toJson(object, Queues.class), object.url))
+    .enqueue(
+        new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+
+            future.completeExceptionally(e);
+          }
+
+          @Override
+          public void onResponse(Call call, Response resp) {
+        
+            future.complete(resp);
+
+          }
+        });
+return future;
   }
 }
