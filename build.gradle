@@ -43,6 +43,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
+java{
+    withJavadocJar()
+    withSourcesJar()
+}
+
 test {
     testLogging {
         showStandardStreams = true
