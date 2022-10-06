@@ -40,8 +40,10 @@ public class Routes {
 
             date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date());
 
-            RouteStats.notify(metrics, date);
-            RouteBreakdowns.notify(metrics, date);
+            if (metrics.groups.size() == 1)
+                RouteStats.notify(metrics, date);
+            else    
+                RouteBreakdowns.notify(metrics, date);
 
         } catch (Exception e) {
             Routes.status = e.toString();
@@ -89,15 +91,13 @@ class RouteBreakdowns extends TdigestStatGroup {
     }
 
     static void notify(RouteMetric metrics, String date) {
-        if (metrics.groups.size() > 1) {
-            RouteBreakdowns routeBreakdowns = new RouteBreakdowns(metrics.method, metrics.route, metrics.contentType,
+      
+        RouteBreakdowns routeBreakdowns = new RouteBreakdowns(metrics.method, metrics.route, metrics.contentType,
                     date);
-            Notifier.routesBreakdownList.add(routeBreakdowns);
+        Notifier.routesBreakdownList.add(routeBreakdowns);
 
-            long msbr = metrics.endTime.getTime() - metrics.startTime.getTime();
-            routeBreakdowns.addGroups(msbr, metrics.groups);
-
-        }
+        long msbr = metrics.endTime.getTime() - metrics.startTime.getTime();
+        routeBreakdowns.addGroups(msbr, metrics.groups);
 
         RouteBreakDownTimerTask.start();
     }
