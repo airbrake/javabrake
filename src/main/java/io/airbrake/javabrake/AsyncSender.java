@@ -9,7 +9,5 @@ public interface AsyncSender {
   void setAPMHost(String host);
 
   CompletableFuture<Notice> send(Notice notice);
-  CompletableFuture<Response> send(Routes object);
-  CompletableFuture<Response> send(Queries object);
-  CompletableFuture<Response> send(Queues object);
+  CompletableFuture<Response> send(String body, String path);
 }

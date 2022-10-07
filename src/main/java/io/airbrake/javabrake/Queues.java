@@ -13,13 +13,11 @@ public class Queues {
 
     String environment;
     List<Object> queues;
-    transient String url;
     static transient String status = null;
 
-    Queues(String environment, List<Object> queues, String url) {
+    Queues(String environment, List<Object> queues) {
         this.environment = environment;
-        this.queues = queues;
-        this.url = url;
+        this.queues = queues;     
     }
 
     Queues() {
@@ -87,9 +85,9 @@ class QueueTimerTask extends TimerTask {
 
         if (Notifier.queueList.size() > 0) {
 
-            Queues queues = new Queues(Notifier.config.environment, Notifier.queueList, Constant.apmQueue);
+            Queues queues = new Queues(Notifier.config.environment, Notifier.queueList);
             Notifier.queueList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(queues);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queues), Constant.apmQueue);
 
             future.whenComplete(
                     (value, exception) -> {

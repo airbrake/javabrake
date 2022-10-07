@@ -13,14 +13,12 @@ public class Routes {
     String environment;
     List<Object> routes = new ArrayList<>();
 
-    transient String path;
     static transient String status = null;
     String date;
 
-    Routes(String environment, List<Object> routes, String path) {
+    Routes(String environment, List<Object> routes) {
         this.environment = environment;
         this.routes = routes;
-        this.path = path;
     }
 
     public Routes() {
@@ -40,10 +38,8 @@ public class Routes {
 
             date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date());
 
-            if (metrics.groups.size() == 1)
-                RouteStats.notify(metrics, date);
-            else    
-                RouteBreakdowns.notify(metrics, date);
+            RouteStats.notify(metrics, date);
+            RouteBreakdowns.notify(metrics, date);
 
         } catch (Exception e) {
             Routes.status = e.toString();
@@ -91,15 +87,17 @@ class RouteBreakdowns extends TdigestStatGroup {
     }
 
     static void notify(RouteMetric metrics, String date) {
-      
-        RouteBreakdowns routeBreakdowns = new RouteBreakdowns(metrics.method, metrics.route, metrics.contentType,
+
+        if (metrics.groups.size() > 1) {
+            RouteBreakdowns routeBreakdowns = new RouteBreakdowns(metrics.method, metrics.route, metrics.contentType,
                     date);
-        Notifier.routesBreakdownList.add(routeBreakdowns);
+            Notifier.routesBreakdownList.add(routeBreakdowns);
 
-        long msbr = metrics.endTime.getTime() - metrics.startTime.getTime();
-        routeBreakdowns.addGroups(msbr, metrics.groups);
+            long msbr = metrics.endTime.getTime() - metrics.startTime.getTime();
+            routeBreakdowns.addGroups(msbr, metrics.groups);
 
-        RouteBreakDownTimerTask.start();
+            RouteBreakDownTimerTask.start();
+        }
     }
 }
 
@@ -119,9 +117,9 @@ class RouteTimerTask extends TimerTask {
         hasStarted = true;
 
         if (Notifier.routeList.size() > 0) {
-            Routes routes = new Routes(Notifier.config.environment, Notifier.routeList, Constant.apmRoute);
+            Routes routes = new Routes(Notifier.config.environment, Notifier.routeList);
             Notifier.routeList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(routes);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes), Constant.apmRoute);
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
@@ -140,24 +138,23 @@ class RouteTimerTask extends TimerTask {
 
 class RouteBreakDownTimerTask extends TimerTask {
     static Timer brTimer = new Timer();
-    static boolean isStartedBrakedown = false;
+    static boolean isStartedBreakdown = false;
 
     public static void start() {
-        if (!isStartedBrakedown) {
-            isStartedBrakedown = true;
+        if (!isStartedBreakdown) {
+            isStartedBreakdown = true;
             brTimer.schedule(new RouteBreakDownTimerTask(), 0, Metrics.FLUSH_PERIOD * 1000);
         }
     }
 
     @Override
     public void run() {
-        isStartedBrakedown = true;
+        isStartedBreakdown = true;
 
         if (Notifier.routesBreakdownList.size() > 0) {
-            Routes routes = new Routes(Notifier.config.environment, Notifier.routesBreakdownList,
-                    Constant.apmRouteBreakDown);
+            Routes routes = new Routes(Notifier.config.environment, Notifier.routesBreakdownList);
             Notifier.routesBreakdownList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(routes);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),Constant.apmRouteBreakDown);
 
             future.whenComplete(
                     (value, exception) -> {

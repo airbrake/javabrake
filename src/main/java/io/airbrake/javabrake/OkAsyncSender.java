@@ -8,8 +8,7 @@ import okhttp3.Response;
 
 public class OkAsyncSender extends OkSender implements AsyncSender {
   static final int queuedCallsLimit = 1000;
-  static final IOException queuedCallsLimitException =
-      new IOException("too many HTTP requests queued for execution");
+  static final IOException queuedCallsLimitException = new IOException("too many HTTP requests queued for execution");
 
   public OkAsyncSender(Config config) {
     super(config);
@@ -68,56 +67,11 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   }
 
   @Override
-  public CompletableFuture<Response> send(Routes object) {
+  public CompletableFuture<Response> send(String body, String path) {
     CompletableFuture<Response> future = new CompletableFuture<>();
-    okhttp
-        .newCall(this.buildAPMRequest(gson.toJson(object, Routes.class), object.path))
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
 
-                future.completeExceptionally(e);
-              }
-
-              @Override
-              public void onResponse(Call call, Response resp) {
-                
-                future.complete(resp);
-
-              }
-            });
-    return future;
-  }
-
-  @Override
-  public CompletableFuture<Response> send(Queries object) {
-    CompletableFuture<Response> future = new CompletableFuture<>();
-    okhttp
-        .newCall(this.buildAPMRequest(gson.toJson(object, Queries.class), object.path))
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
-
-                future.completeExceptionally(e);
-              }
-
-              @Override
-              public void onResponse(Call call, Response resp) {
-
-                future.complete(resp);
-
-              }
-            });
-    return future;
-  }
-
-  @Override
-  public CompletableFuture<Response> send(Queues object) {
-    CompletableFuture<Response> future = new CompletableFuture<>();
-    okhttp
-    .newCall(this.buildAPMRequest(gson.toJson(object, Queues.class), object.url))
+ okhttp
+    .newCall(this.buildAPMRequest(body,path))
     .enqueue(
         new Callback() {
           @Override
@@ -128,11 +82,11 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
 
           @Override
           public void onResponse(Call call, Response resp) {
-        
+
             future.complete(resp);
 
           }
         });
-return future;
+    return future;
   }
 }

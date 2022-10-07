@@ -14,13 +14,11 @@ public class Queries {
     String environment;
     List<Object> queries;
 
-    transient String path;
     static transient String status = null;
     
-    Queries(String environment, List<Object> queries, String path) {
+    Queries(String environment, List<Object> queries) {
         this.environment = environment;
         this.queries = queries;
-        this.path = path;
     }
 
     public Queries() {
@@ -136,9 +134,9 @@ class QueryTimerTask extends TimerTask {
         hasStarted = true;
 
         if (Notifier.queryList.size() > 0) {
-            Queries queries = new Queries(Notifier.config.environment, Notifier.queryList, Constant.apmQuery);
+            Queries queries = new Queries(Notifier.config.environment, Notifier.queryList);
             Notifier.queryList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(queries);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queries),Constant.apmQuery);
 
             future.whenComplete(
                     (value, exception) -> {
