@@ -24,15 +24,14 @@ public class Queues {
     }
 
     public void notify(QueueMetric metrics) {
-
+        Queues.status = null;
         if (!Notifier.config.performanceStats) {
-            status = "performanceStats is disabled";
+            Queues.status = "performanceStats is disabled";
             return;
-
         }
 
         if (!Notifier.config.queueStats) {
-            status = "queueStats is disabled";
+            Queues.status = "queueStats is disabled";
             return;
         }
 
@@ -51,7 +50,7 @@ public class Queues {
 
             QueueTimerTask.start();
         } catch (Exception e) {
-            status = e.getMessage();
+            Queues.status = e.toString();
         }
     }
 }

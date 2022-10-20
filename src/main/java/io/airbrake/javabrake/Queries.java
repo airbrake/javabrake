@@ -27,14 +27,14 @@ public class Queries {
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
             @NotNull Date endTime, @NotNull String function,
             @NotNull String file, @NotNull int line) {
-                status = null;
+                Queries.status = null;
         if (!Notifier.config.performanceStats) {
-            status = "performanceStats is disabled";
+            Queries.status = "performanceStats is disabled";
             return;
         }
 
         if (!Notifier.config.queryStats) {
-            status = "queryStats is disabled";
+            Queries.status = "queryStats is disabled";
             return;
         }
 
@@ -52,21 +52,21 @@ public class Queries {
 
             QueryTimerTask.start();
         } catch (Exception e) {
-            status = e.getMessage();
+            Queries.status = e.toString();
         }
         return;
     }
 
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
             @NotNull Date endTime) {
-                status = null;
+                Queries.status = null;
         if (!Notifier.config.performanceStats) {
-            status = "performanceStats is disabled";
+            Queries.status = "performanceStats is disabled";
             return;
         }
 
         if (!Notifier.config.queryStats) {
-            status = "queryStats is disabled";
+            Queries.status = "queryStats is disabled";
             return;
         }
 
@@ -84,7 +84,7 @@ public class Queries {
             queryStats.tdigest = queryStats.getData();
             QueryTimerTask.start();
         } catch (Exception e) {
-            status = e.getMessage();
+            Queries.status = e.toString();
         }
         return;
     }
