@@ -17,7 +17,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
-import okio.Buffer;
 
 @TestMethodOrder(OrderAnnotation.class)
 public class RouteTest {
@@ -50,6 +49,47 @@ public class RouteTest {
     long ms = metric.endTime.getTime() - metric.startTime.getTime();
     stat.add(ms);
     return stat;
+  }
+
+  public RouteBreakdowns getRouteBreakDown() {
+    RouteMetric metric = new RouteMetric("GET", "/test");
+
+    Metrics.FLUSH_PERIOD = 5;
+    try {
+			Thread.sleep(2500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		metric.startSpan("DB", new Date());
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		metric.endSpan("DB", new Date());
+
+		metric.startSpan("view", new Date());
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		metric.endSpan("view", new Date());		
+		metric.end();
+
+    String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(metric.startTime);
+    RouteBreakdowns routeBreakdowns = new RouteBreakdowns(metric.method, metric.route, metric.contentType,
+    date);
+Notifier.routesBreakdownList.add(routeBreakdowns);
+
+long msbr = metric.endTime.getTime() - metric.startTime.getTime();
+routeBreakdowns.addGroups(msbr, metric.groups);
+    return routeBreakdowns;
   }
 
   @Test
@@ -103,45 +143,50 @@ public class RouteTest {
     }
   }
 
+
   @Test
   @Order(4)
+  public void testRouteBreakDownNotifyException() {
+
+    config.performanceStats = true;
+    config.projectId = 1;
+    notifier.setAPMHost("http://localhost:8080");
+
+    stubFor(post(urlEqualTo("/api/v5/projects/1/routes-breakdowns")).withHeader("Authorization", containing("Bearer "))
+        .willReturn(aResponse().withBody("{}")
+            .withStatus(200)));
+
+    try {
+      notifier.routes.notify(null);
+
+    } finally {
+      assertEquals(Routes.status, "java.lang.NullPointerException");
+    }
+  }
+
+  @Test
+  @Order(5)
   public void testRouteNotifySuccess() {
 
     config.performanceStats = true;
     config.projectId = 1;
     notifier.setAPMHost("http://localhost:8080");
 
-    stubFor(post(urlEqualTo("/api/v5/projects/1/routes-stats")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{'message':'Success'}")
-            .withStatus(200)));
-
     List<Object> routeList = new ArrayList<>();
     routeList.add(getRouteStats());
+
     Routes routes = new Routes(Notifier.config.environment, routeList);
+
+    stubFor(post(urlEqualTo("/api/v5/projects/1/routes-stats")).withHeader("Authorization", containing("Bearer "))
+        .withRequestBody(equalToJson(OkSender.gson.toJson(routes), true, true))
+        .willReturn(aResponse().withBody("{\"message\":\"Success\"}")
+            .withStatus(200)));
 
     OkSender okSender = new OkSender(config);
 
     Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(routes), Constant.apmRoute));
     try (Response resp = call.execute()) {
       JSONObject res = null;
-
-      try {
-        Buffer buffer = new Buffer();
-        try {
-          resp.request().body().writeTo(buffer);
-        } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-        String json = buffer.readUtf8();
-       
-        verify(postRequestedFor(urlEqualTo("/api/v5/projects/1/routes-stats"))
-          .withRequestBody(equalTo(json)));
-
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
 
       try {
         res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
@@ -152,6 +197,41 @@ public class RouteTest {
       assertEquals(res.get("message"), "Success");
     } catch (IOException e) {
 
+    }
+  }
+
+  @Test
+  @Order(5)
+  public void testRouteBreakDownNotifySuccess() {
+
+    config.performanceStats = true;
+    config.projectId = 1;
+    notifier.setAPMHost("http://localhost:8080");
+
+    List<Object> routeList = new ArrayList<>();
+    routeList.add(getRouteBreakDown());
+
+    Routes routes = new Routes(Notifier.config.environment, routeList);
+
+    stubFor(post(urlEqualTo("/api/v5/projects/1/routes-breakdowns")).withHeader("Authorization", containing("Bearer "))
+        .withRequestBody(equalToJson(OkSender.gson.toJson(routes), true, true))
+        .willReturn(aResponse().withBody("{\"message\":\"Success\"}")
+            .withStatus(200)));
+
+    OkSender okSender = new OkSender(config);
+
+    Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(routes), Constant.apmRouteBreakDown));
+    try (Response resp = call.execute()) {
+      JSONObject res = null;
+
+      try {
+        res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      assertEquals(res.get("message"), "Success");
+    } catch (IOException e) {
     }
   }
 

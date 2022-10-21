@@ -8,19 +8,16 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
-
 import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
-import okio.Buffer;
+
 
 @TestMethodOrder(OrderAnnotation.class)
 public class QueriesTest {
@@ -126,10 +123,6 @@ public class QueriesTest {
     config.projectId = 1;
     notifier.setAPMHost("http://localhost:8080");
 
-    stubFor(post(urlEqualTo("/api/v5/projects/1/queries-stats")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{'message':'Success'}")
-            .withStatus(200)));
-
     List<Object> list = new ArrayList<>();
     String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(this.startTime);
 
@@ -138,33 +131,20 @@ public class QueriesTest {
 
     long ms = this.endTime.getTime() - this.startTime.getTime();
     queryStats.add(ms);
+
     Queries queries = new Queries(config.environment, list);
+
+    stubFor(post(urlEqualTo("/api/v5/projects/1/queries-stats")).withHeader("Authorization", containing("Bearer "))
+        .withRequestBody(equalToJson(OkSender.gson.toJson(queries), true, true))
+        .willReturn(aResponse().withBody("{'message':'Success'}")
+            .withStatus(200)));
 
     OkSender okSender = new OkSender(config);
 
-
-
     Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(queries), Constant.apmQuery));
     try (Response resp = call.execute()) {
-
-      try {
-        Buffer buffer = new Buffer();
-        try {
-          resp.request().body().writeTo(buffer);
-        } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-        String json = buffer.readUtf8();
-       
-        verify(postRequestedFor(urlEqualTo("/api/v5/projects/1/queries-stats"))
-        .withRequestBody(equalTo(json)));
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-
       JSONObject res = null;
+
       try {
         res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
       } catch (Exception e) {

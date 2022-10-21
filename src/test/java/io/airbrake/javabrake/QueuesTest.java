@@ -15,7 +15,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
-import okio.Buffer;
 
 public class QueuesTest {
 
@@ -123,40 +122,21 @@ public class QueuesTest {
     config.projectId = 1;
     notifier.setAPMHost("http://localhost:8080");
 
-    stubFor(post(urlEqualTo("/api/v5/projects/1/queues-stats")).withHeader("Authorization", containing("Bearer "))
-
-        .willReturn(aResponse().withBody("{'message':'Success'}")
-            .withStatus(200)));
-
     List<Object> list = new ArrayList<>();
     list.add(getRouteStats());
+
     Queues queues = new Queues(Notifier.config.environment, list);
+
+    stubFor(post(urlEqualTo("/api/v5/projects/1/queues-stats")).withHeader("Authorization", containing("Bearer "))
+        .withRequestBody(equalToJson(OkSender.gson.toJson(queues), true, true))
+        .willReturn(aResponse().withBody("{'message':'Success'}")
+            .withStatus(200)));
 
     OkSender okSender = new OkSender(config);
 
     Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(queues), Constant.apmQueue));
     try (Response resp = call.execute()) {
-
       JSONObject res = null;
-
-      try {
-        Buffer buffer = new Buffer();
-        try {
-          resp.request().body().writeTo(buffer);
-        } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-        String json = buffer.readUtf8();
-        
-        verify(postRequestedFor(urlEqualTo("/api/v5/projects/1/queues-stats"))
-          .withRequestBody(equalTo(json)));
-
-
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
 
       try {
         res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
