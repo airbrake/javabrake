@@ -17,6 +17,8 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 
 @TestMethodOrder(OrderAnnotation.class)
 public class RouteTest {
@@ -56,39 +58,21 @@ public class RouteTest {
 
     Metrics.FLUSH_PERIOD = 5;
     try {
-			Thread.sleep(2500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		metric.startSpan("DB", new Date());
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		metric.endSpan("DB", new Date());
+      Thread.sleep(2500);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
-		metric.startSpan("view", new Date());
-		try {
-			Thread.sleep(1500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		metric.endSpan("view", new Date());		
-		metric.end();
+    metric.end();
 
     String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(metric.startTime);
     RouteBreakdowns routeBreakdowns = new RouteBreakdowns(metric.method, metric.route, metric.contentType,
-    date);
-Notifier.routesBreakdownList.add(routeBreakdowns);
+        date);
+    Notifier.routesBreakdownList.add(routeBreakdowns);
 
-long msbr = metric.endTime.getTime() - metric.startTime.getTime();
-routeBreakdowns.addGroups(msbr, metric.groups);
+    long msbr = metric.endTime.getTime() - metric.startTime.getTime();
+    routeBreakdowns.addGroups(msbr, metric.groups);
     return routeBreakdowns;
   }
 
@@ -143,7 +127,6 @@ routeBreakdowns.addGroups(msbr, metric.groups);
     }
   }
 
-
   @Test
   @Order(4)
   public void testRouteBreakDownNotifyException() {
@@ -177,14 +160,25 @@ routeBreakdowns.addGroups(msbr, metric.groups);
 
     Routes routes = new Routes(Notifier.config.environment, routeList);
 
+    String json = "{\"environment\":\"${json-unit.any-string}\",\"routes\":[{\"method\":\"${json-unit.any-string}\",\"route\":\"${json-unit.any-string}\","
+        +
+        "\"statusCode\":\"${json-unit.any-number}\"," +
+        "\"time\":\"${json-unit.any-string}\",\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\","
+        +
+        "\"sumsq\":\"${json-unit.any-number}\",\"tdigest\":\"${json-unit.any-string}\"}]}";
+
+    String routeJson = OkSender.gson.toJson(routes);
+
+    assertThatJson(routeJson).isEqualTo(json);
+
     stubFor(post(urlEqualTo("/api/v5/projects/1/routes-stats")).withHeader("Authorization", containing("Bearer "))
-        .withRequestBody(equalToJson(OkSender.gson.toJson(routes), true, true))
+        .withRequestBody(equalToJson(routeJson, true, true))
         .willReturn(aResponse().withBody("{\"message\":\"Success\"}")
             .withStatus(200)));
 
     OkSender okSender = new OkSender(config);
 
-    Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(routes), Constant.apmRoute));
+    Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(routeJson, Constant.apmRoute));
     try (Response resp = call.execute()) {
       JSONObject res = null;
 
@@ -213,6 +207,16 @@ routeBreakdowns.addGroups(msbr, metric.groups);
 
     Routes routes = new Routes(Notifier.config.environment, routeList);
 
+    String json = "{\"environment\":\"${json-unit.any-string}\",\"routes\":[{\"method\":\"${json-unit.any-string}\",\"route\":\"${json-unit.any-string}\","+
+        "\"time\":\"${json-unit.any-string}\"," +
+        "\"groups\":{\"http.handler\":{\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\",\"sumsq\":\"${json-unit.any-number}\","+
+        "\"tdigest\":\"${json-unit.any-string}\"}},\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\"," +
+        "\"sumsq\":\"${json-unit.any-number}\",\"tdigest\":\"${json-unit.any-string}\"}]}";
+
+    String routeJson = OkSender.gson.toJson(routes);
+
+    assertThatJson(routeJson).isEqualTo(json);
+
     stubFor(post(urlEqualTo("/api/v5/projects/1/routes-breakdowns")).withHeader("Authorization", containing("Bearer "))
         .withRequestBody(equalToJson(OkSender.gson.toJson(routes), true, true))
         .willReturn(aResponse().withBody("{\"message\":\"Success\"}")
@@ -220,7 +224,8 @@ routeBreakdowns.addGroups(msbr, metric.groups);
 
     OkSender okSender = new OkSender(config);
 
-    Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(routes), Constant.apmRouteBreakDown));
+    Call call = OkSender.okhttp
+        .newCall(okSender.buildAPMRequest(OkSender.gson.toJson(routes), Constant.apmRouteBreakDown));
     try (Response resp = call.execute()) {
       JSONObject res = null;
 

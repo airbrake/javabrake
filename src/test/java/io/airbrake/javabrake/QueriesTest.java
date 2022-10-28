@@ -17,6 +17,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -134,14 +135,23 @@ public class QueriesTest {
 
     Queries queries = new Queries(config.environment, list);
 
+    String json = "{\"environment\":\"${json-unit.any-string}\",\"queries\":[{\"method\":\"${json-unit.any-string}\",\"route\":\"${json-unit.any-string}\","+
+    "\"query\":\"${json-unit.any-string}\","+
+    "\"time\":\"${json-unit.any-string}\",\"line\":\"${json-unit.any-number}\",\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\","+
+    "\"sumsq\":\"${json-unit.any-number}\",\"tdigest\":\"${json-unit.any-string}\"}]}";
+
+    String queriesJson = OkSender.gson.toJson(queries);
+    
+    assertThatJson(queriesJson).isEqualTo(json);
+
     stubFor(post(urlEqualTo("/api/v5/projects/1/queries-stats")).withHeader("Authorization", containing("Bearer "))
-        .withRequestBody(equalToJson(OkSender.gson.toJson(queries), true, true))
+        .withRequestBody(equalToJson(queriesJson, true, true))
         .willReturn(aResponse().withBody("{'message':'Success'}")
             .withStatus(200)));
 
     OkSender okSender = new OkSender(config);
 
-    Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(OkSender.gson.toJson(queries), Constant.apmQuery));
+    Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(queriesJson, Constant.apmQuery));
     try (Response resp = call.execute()) {
       JSONObject res = null;
 

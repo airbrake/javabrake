@@ -41,6 +41,10 @@ dependencies {
     api 'com.google.code.findbugs:jsr305:3.0.2'
     testImplementation 'com.github.tomakehurst:wiremock:2.27.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    // https://mvnrepository.com/artifact/net.javacrumbs.json-unit/json-unit-assertj
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.35.0'
+
+
 }
 
 java{

@@ -15,6 +15,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 public class QueuesTest {
 
@@ -100,7 +101,7 @@ public class QueuesTest {
     }
   }
 
-  public QueueStats getRouteStats() {
+  public QueueStats getQueueStats() {
     QueueMetric metric = new QueueMetric("test");
     metric.end();
 
@@ -123,9 +124,18 @@ public class QueuesTest {
     notifier.setAPMHost("http://localhost:8080");
 
     List<Object> list = new ArrayList<>();
-    list.add(getRouteStats());
+    list.add(getQueueStats());
 
     Queues queues = new Queues(Notifier.config.environment, list);
+
+    String json = "{\"environment\":\"${json-unit.any-string}\",\"queues\":[{\"queue\":\"${json-unit.any-string}\",\"time\":\"${json-unit.any-string}\"," +
+        "\"groups\":{\"queue.handler\":{\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\",\"sumsq\":\"${json-unit.any-number}\"," +
+        "\"tdigest\":\"${json-unit.any-string}\"}},\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\"," +
+        "\"sumsq\":\"${json-unit.any-number}\",\"tdigest\":\"${json-unit.any-string}\"}]}";
+  
+    String queueJson = OkSender.gson.toJson(queues);
+
+    assertThatJson(queueJson).isEqualTo(json);
 
     stubFor(post(urlEqualTo("/api/v5/projects/1/queues-stats")).withHeader("Authorization", containing("Bearer "))
         .withRequestBody(equalToJson(OkSender.gson.toJson(queues), true, true))
