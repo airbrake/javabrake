@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.10'
     // https://mvnrepository.com/artifact/com.tdunning/t-digest
     implementation 'com.tdunning:t-digest:3.2'
     api 'com.google.code.findbugs:jsr305:3.0.2'
@@ -102,20 +102,10 @@ publishing {
         }
     }
     repositories{
-            // maven{
-           
-            //     name = 'OSSRH'
-            //     url = 'https://oss.sonatype.org/content/repositories/snapshots'
-            //     credentials {
-            //         username = project.properties["ossrhUsername"]
-            //         password = project.properties["ossrhPassword"]
-            // }
-            //}
         maven{
            
                 name = 'OSSRH'
                  url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-             //    url = 'https://oss.sonatype.org/content/repositories/snapshots'
                 credentials {
                     username = project.properties["ossrhUsername"]
                     password = project.properties["ossrhPassword"]
@@ -128,8 +118,4 @@ publishing {
 
 signing {
     sign publishing.publications.mavenJava
-}
-
-javadoc{
-    
 }

@@ -61,17 +61,6 @@ public class Notifier{
     }
   }
 
-  // public static Notifier getInstance(Config config)
-  // {
-  //   if(notifier == null)
-  //     return new Notifier(config);
-  //   else
-  //   {
-  //     Notifier.config = config;
-  //     return notifier;  
-  //   }    
-  // }
-
   public Notifier setErrorHost(String host) {
     config.errorHost = host;
     this.asyncSender.setErrorHost(host);
