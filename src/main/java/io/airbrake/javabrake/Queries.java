@@ -42,7 +42,6 @@ public class Queries {
             Notifier.config.environment = "production";
         }
 
-        try {
             String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(startTime);
             QueryStats queryStats = new QueryStats(method, route, query, date, function, file, line);
             Notifier.queryList.add(queryStats);
@@ -51,10 +50,6 @@ public class Queries {
             queryStats.add(ms);
 
             QueryTimerTask.start();
-        } catch (Exception e) {
-            Queries.status = e.toString();
-        }
-        return;
     }
 
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
