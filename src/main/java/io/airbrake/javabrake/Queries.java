@@ -15,7 +15,7 @@ public class Queries {
     List<Object> queries;
 
     static transient String status = null;
-    
+
     Queries(String environment, List<Object> queries) {
         this.environment = environment;
         this.queries = queries;
@@ -27,7 +27,7 @@ public class Queries {
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
             @NotNull Date endTime, @NotNull String function,
             @NotNull String file, @NotNull int line) {
-                Queries.status = null;
+        Queries.status = null;
         if (!Notifier.config.performanceStats) {
             Queries.status = "performanceStats is disabled";
             return;
@@ -59,7 +59,7 @@ public class Queries {
 
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
             @NotNull Date endTime) {
-                Queries.status = null;
+        Queries.status = null;
         if (!Notifier.config.performanceStats) {
             Queries.status = "performanceStats is disabled";
             return;
@@ -74,19 +74,14 @@ public class Queries {
             Notifier.config.environment = "production";
         }
 
-        try {
-            String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(startTime);
-            QueryStats queryStats = new QueryStats(method, route, query, date);
-            Notifier.queryList.add(queryStats);
+        String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(startTime);
+        QueryStats queryStats = new QueryStats(method, route, query, date);
+        Notifier.queryList.add(queryStats);
 
-            long ms = endTime.getTime() - startTime.getTime();
-            queryStats.add(ms);
-            queryStats.tdigest = queryStats.getData();
-            QueryTimerTask.start();
-        } catch (Exception e) {
-            Queries.status = e.toString();
-        }
-        return;
+        long ms = endTime.getTime() - startTime.getTime();
+        queryStats.add(ms);
+        queryStats.tdigest = queryStats.getData();
+        QueryTimerTask.start();
     }
 }
 
@@ -136,16 +131,16 @@ class QueryTimerTask extends TimerTask {
         if (Notifier.queryList.size() > 0) {
             Queries queries = new Queries(Notifier.config.environment, Notifier.queryList);
             Notifier.queryList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queries),Constant.apmQuery);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queries),
+                    Constant.apmQuery);
 
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
                             Queries.status = exception.getMessage();
-                        } else if(!value.isSuccessful())  
-                        {
+                        } else if (!value.isSuccessful()) {
                             Queries.status = value.message();
-                        }  
+                        }
                     });
         }
     }

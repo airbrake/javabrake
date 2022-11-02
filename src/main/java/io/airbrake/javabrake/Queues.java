@@ -17,7 +17,7 @@ public class Queues {
 
     Queues(String environment, List<Object> queues) {
         this.environment = environment;
-        this.queues = queues;     
+        this.queues = queues;
     }
 
     Queues() {
@@ -39,19 +39,16 @@ public class Queues {
             Notifier.config.environment = "production";
         }
 
-        try {
-            String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(metrics.startTime);
+        String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(metrics.startTime);
 
-            QueueStats queueStats = new QueueStats(metrics.queue, date);
-            Notifier.queueList.add(queueStats);
+        QueueStats queueStats = new QueueStats(metrics.queue, date);
+        Notifier.queueList.add(queueStats);
 
-            long ms = metrics.endTime.getTime() - metrics.startTime.getTime();
-            queueStats.addGroups(ms, metrics.groups);
+        long ms = metrics.endTime.getTime() - metrics.startTime.getTime();
+        queueStats.addGroups(ms, metrics.groups);
 
-            QueueTimerTask.start();
-        } catch (Exception e) {
-            Queues.status = e.toString();
-        }
+        QueueTimerTask.start();
+
     }
 }
 
@@ -86,7 +83,8 @@ class QueueTimerTask extends TimerTask {
 
             Queues queues = new Queues(Notifier.config.environment, Notifier.queueList);
             Notifier.queueList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queues), Constant.apmQueue);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queues),
+                    Constant.apmQueue);
 
             future.whenComplete(
                     (value, exception) -> {

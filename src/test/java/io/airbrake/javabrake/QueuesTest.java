@@ -81,26 +81,6 @@ public class QueuesTest {
     }
   }
 
-  @Test
-  public void testQueueNotifyException() {
-
-    config.performanceStats = true;
-    config.environment = "production";
-    config.projectId = 0;
-    notifier.setAPMHost("http://localhost:8080");
-    // QueueMetric metric = new QueueMetric("Test");
-
-    stubFor(post(urlEqualTo("/api/v5/projects/0/queues-stats")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{}")
-            .withStatus(200)));
-
-    try {
-      notifier.queues.notify(null);
-    } finally {
-      assertEquals(Queues.status, "java.lang.NullPointerException");
-    }
-  }
-
   public QueueStats getQueueStats() {
     QueueMetric metric = new QueueMetric("test");
     metric.end();

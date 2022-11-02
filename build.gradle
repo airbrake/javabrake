@@ -17,7 +17,7 @@ buildscript {
  apply plugin: 'io.codearte.nexus-staging'
 
 group = 'io.airbrake'
-version = '0.2.5'
+version = '0.2.4'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -70,7 +70,7 @@ publishing {
 
             group = 'io.airbrake'
             artifactId = 'javabrake'
-            version = '0.2.5'
+            version = '0.2.4'
             description = 'javabrake'
             from(components.java) 
 

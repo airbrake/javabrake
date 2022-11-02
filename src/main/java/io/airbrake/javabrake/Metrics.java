@@ -14,8 +14,8 @@ public class Metrics {
     Map<String, Long> groups = new HashMap<>();
 
     public void end() {
-        if (endTime == null)
-            endTime = new Date();
+        if (this.endTime == null)
+            this.endTime = new Date();
     }
 
     protected Span newSpan(String name, Date startTime) {
@@ -66,12 +66,14 @@ public class Metrics {
         }
 
         span.end(endTime);
-        this.spans.get(span.name);
+        this.spans.remove(span.name);
         return true;
 
     }
 
     protected void _inc_group(String name, long ms) {
+        if (ms <= 0)
+            ms = 1;
         this.groups.put(name, (this.groups.getOrDefault(name, (long) 0) + ms));
     }
 }

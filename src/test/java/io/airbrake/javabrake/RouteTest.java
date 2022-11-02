@@ -100,6 +100,7 @@ public class RouteTest {
     RouteMetric metric = new RouteMetric("GET", "/test");
     metric.statusCode = 200;
     metric.contentType = "application/json";
+    metric.end();
     try {
       notifier.routes.notify(metric);
     } finally {
@@ -109,46 +110,6 @@ public class RouteTest {
 
   @Test
   @Order(3)
-  public void testRouteNotifyException() {
-
-    config.performanceStats = true;
-    config.projectId = 1;
-    notifier.setAPMHost("http://localhost:8080");
-
-    stubFor(post(urlEqualTo("/api/v5/projects/1/routes-stats")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{}")
-            .withStatus(200)));
-
-    try {
-      notifier.routes.notify(null);
-
-    } finally {
-      assertEquals(Routes.status, "java.lang.NullPointerException");
-    }
-  }
-
-  @Test
-  @Order(4)
-  public void testRouteBreakDownNotifyException() {
-
-    config.performanceStats = true;
-    config.projectId = 1;
-    notifier.setAPMHost("http://localhost:8080");
-
-    stubFor(post(urlEqualTo("/api/v5/projects/1/routes-breakdowns")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{}")
-            .withStatus(200)));
-
-    try {
-      notifier.routes.notify(null);
-
-    } finally {
-      assertEquals(Routes.status, "java.lang.NullPointerException");
-    }
-  }
-
-  @Test
-  @Order(5)
   public void testRouteNotifySuccess() {
 
     config.performanceStats = true;
@@ -195,7 +156,7 @@ public class RouteTest {
   }
 
   @Test
-  @Order(5)
+  @Order(4)
   public void testRouteBreakDownNotifySuccess() {
 
     config.performanceStats = true;

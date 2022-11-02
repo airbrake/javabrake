@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>io.airbrake</groupId>
 			<artifactId>javabrake</artifactId>
-			<version>0.2.5</version>
+			<version>0.2.4</version>
 		</dependency>
 
 		<dependency>

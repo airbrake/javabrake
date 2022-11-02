@@ -11,7 +11,7 @@ public class RouteMetric extends Metrics {
         super();
         this.method = method;
         this.route = route;
-        startSpan(HTTP_HANDLER, this.startTime);
+        this.startSpan(HTTP_HANDLER, this.startTime);
     }
 
     public RouteMetric() {

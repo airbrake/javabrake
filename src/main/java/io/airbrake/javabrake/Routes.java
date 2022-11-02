@@ -25,25 +25,20 @@ public class Routes {
     }
 
     public void notify(RouteMetric metrics) {
-        try {
-            Routes.status = null;
-            if (!Notifier.config.performanceStats) {
-                Routes.status = "performanceStats is disabled";
-                return;
-            }
-
-            if (Notifier.config.environment == null || Notifier.config.environment.equals("")) {
-                Notifier.config.environment = "production";
-            }
-
-            date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date());
-
-            RouteStats.notify(metrics, date);
-            RouteBreakdowns.notify(metrics, date);
-
-        } catch (Exception e) {
-            Routes.status = e.toString();
+        Routes.status = null;
+        if (!Notifier.config.performanceStats) {
+            Routes.status = "performanceStats is disabled";
+            return;
         }
+
+        if (Notifier.config.environment == null || Notifier.config.environment.equals("")) {
+            Notifier.config.environment = "production";
+        }
+
+        date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date());
+
+        RouteStats.notify(metrics, date);
+        RouteBreakdowns.notify(metrics, date);
     }
 }
 
@@ -119,7 +114,8 @@ class RouteTimerTask extends TimerTask {
         if (Notifier.routeList.size() > 0) {
             Routes routes = new Routes(Notifier.config.environment, Notifier.routeList);
             Notifier.routeList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes), Constant.apmRoute);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),
+                    Constant.apmRoute);
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
@@ -154,7 +150,8 @@ class RouteBreakDownTimerTask extends TimerTask {
         if (Notifier.routesBreakdownList.size() > 0) {
             Routes routes = new Routes(Notifier.config.environment, Notifier.routesBreakdownList);
             Notifier.routesBreakdownList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),Constant.apmRouteBreakDown);
+            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),
+                    Constant.apmRouteBreakDown);
 
             future.whenComplete(
                     (value, exception) -> {

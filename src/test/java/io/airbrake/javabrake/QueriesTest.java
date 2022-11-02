@@ -93,31 +93,6 @@ public class QueriesTest {
 
   @Test
   @Order(4)
-  public void testQueriesNotifyException() {
-
-    config.performanceStats = true;
-    config.queryStats = true;
-    config.environment = "production";
-    config.projectId = 0;
-    notifier.setAPMHost("http://localhost:8080");
-
-    stubFor(post(urlEqualTo("/api/v5/projects/0/queries-stats")).withHeader("Authorization", containing("Bearer "))
-        .willReturn(aResponse().withBody("{}")
-            .withStatus(200)));
-
-    try {
-      notifier.queries.notify(null,
-          null,
-          null,
-          null, null, null, null, 0);
-    } finally {
-      assertEquals(Queries.status, "java.lang.NullPointerException");
-    }
-
-  }
-
-  @Test
-  @Order(5)
   public void testQueryNotifySuccess() {
 
     config.performanceStats = true;
