@@ -35,7 +35,8 @@ public class OkSender {
   final Config config;
   final int projectId;
   final String projectKey;
-  String url;
+  String apmUrl;
+  String errorUrl;
 
   final AtomicLong rateLimitReset = new AtomicLong(0);
 
@@ -43,23 +44,39 @@ public class OkSender {
     this.config = config;
     this.projectId = config.projectId;
     this.projectKey = config.projectKey;
-    this.url = this.buildUrl(config.errorHost);
+    this.errorUrl = this.buildErrorUrl(config.errorHost);
+    this.apmUrl = this.buildAPMUrl(config.errorHost);
   }
 
   public static void setOkHttpClient(OkHttpClient okhttp) {
     OkSender.okhttp = okhttp;
   }
 
-  public void setHost(String host) {
-    this.url = this.buildUrl(host);
+  public void setErrorHost(String host) {
+    this.errorUrl = this.buildErrorUrl(host);
   }
 
-  Request buildRequest(Notice notice) {
+  public void setAPMHost(String host) {
+   this.apmUrl = this.buildAPMUrl(host);
+ }
+
+  Request buildErrorRequest(Notice notice) {
+    this.errorUrl = this.buildErrorUrl(config.errorHost);
     String data = this.noticeJson(notice);
     RequestBody body = RequestBody.create(data,JSONType);
     return new Request.Builder()
         .header("Authorization", "Bearer " + this.projectKey)
-        .url(this.url)
+        .url(this.errorUrl)
+        .post(body)
+        .build();
+  }
+
+  Request buildAPMRequest(String json,String method) {
+    this.apmUrl = this.buildAPMUrl(method);
+    RequestBody body = RequestBody.create(json,JSONType);
+    return new Request.Builder()
+        .header("Authorization", "Bearer " + this.projectKey)
+        .url(this.apmUrl)
         .post(body)
         .build();
   }
@@ -84,8 +101,12 @@ public class OkSender {
     return data;
   }
 
-  String buildUrl(String host) {
+  String buildErrorUrl(String host) {
     return String.format("%s/api/v3/projects/%d/notices", host, this.projectId);
+  }
+
+  String buildAPMUrl(String path) {
+    return String.format("%s/api/v5/projects/%d/%s", config.apmHost, this.projectId, path);
   }
 
   void parseResponse(Response resp, Notice notice) {
@@ -100,7 +121,7 @@ public class OkSender {
       return;
     }
 
-    if (resp.code() == 401) {
+    if (resp.code() == 401 || resp.code() == 403) {
       notice.exception = ipUnauthorizedException;
       return;
     }

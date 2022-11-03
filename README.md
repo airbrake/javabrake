@@ -16,7 +16,7 @@ Javabrake is a Java notifier for Airbrake.
 Gradle:
 
 ```gradle
-implementation 'io.airbrake:javabrake:0.2.4'
+implementation 'io.airbrake:javabrake:0.3.0'
 ```
 
 Maven:
@@ -25,14 +25,14 @@ Maven:
 <dependency>
   <groupId>io.airbrake</groupId>
   <artifactId>javabrake</artifactId>
-  <version>0.2.4</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
 Ivy:
 
 ```xml
-<dependency org='io.airbrake' name='javabrake' rev='0.2.4'>
+<dependency org='io.airbrake' name='javabrake' rev='0.3.0'>
   <artifact name='javabrake' ext='pom'></artifact>
 </dependency>
 ```
@@ -57,7 +57,11 @@ notifier.addFilter(
     });
 ```
 
-Using `notifier` directly:
+## Error Monitoring
+
+### Sending errors to Airbrake
+
+#### Using `notifier` directly
 
 ```java
 try {
@@ -67,7 +71,7 @@ try {
 }
 ```
 
-Using `Airbrake` proxy class:
+#### Using `Airbrake` proxy class
 
 ```java
 import io.airbrake.javabrake.Airbrake;
@@ -78,6 +82,8 @@ try {
   Airbrake.report(e);
 }
 ```
+
+### Sending errors synchronously
 
 By default `report` sends errors asynchronously returning a `Future`, but synchronous API is also available:
 
@@ -91,6 +97,8 @@ if (notice.exception != null) {
     logger.info(notice.id);
 }
 ```
+
+### Adding custom params
 
 To set custom params you can build and send notice in separate steps:
 
@@ -113,7 +121,19 @@ notifier.addFilter(
     });
 ```
 
-Or ignore specific notice:
+### Linking errors to routes
+
+You can link error notices with the routes by setting the route e.g. /hello and httpMethod e.g. GET, POST in the custom parameters for error notices. For example:
+
+```java
+Notice notice = notifier.buildNotice(e);
+notice.setContext("route", "route-name");
+notice.setContext("httpMethod", "http-method-name");
+```
+
+### Ignoring notices
+
+gnore specific notice:
 
 ```java
 notifier.addFilter(
@@ -125,6 +145,8 @@ notifier.addFilter(
       return notice;
     });
 ```
+
+### Debugging notices
 
 To debug why notices are not sent you can use `onReportedNotice` hook:
 
@@ -138,6 +160,110 @@ notifier.onReportedNotice(
       }
     });
 ```
+
+## Performance Monitoring
+
+You can read more about our [Performance Monitoring offering in our docs][docs/performance].
+
+### Sending route stats
+
+`notifier.routes.notify` allows sending route stats to Airbrake. You can also use this API manually:
+
+```java
+import io.airbrake.javabrake.RouteMetric;
+
+RouteMetric metric = new RouteMetric(request.getMethod(), request.getRequestURI());
+metric.statusCode = response.getStatus();
+metric.contentType = response.getContentType();
+metric.endTime = new Date();
+
+notifier.routes.notify(metric);
+```
+
+### Sending route breakdowns
+
+`notifier.routes.notify` allows sending performance breakdown stats
+to Airbrake. You can use this API manually:
+
+```java
+import io.airbrake.javabrake.RouteMetric;
+
+RouteMetric metric = new RouteMetric(request.getMethod(), request.getRequestURI());
+
+metric.startSpan("span1 name", new Date());
+try {
+	do();
+} catch (Exception e) {
+	e.printStackTrace();
+}
+metric.endSpan("span1 name", new Date());
+
+metric.startSpan("span2 name", new Date());
+try {
+  do();
+} catch (Exception e) {
+	e.printStackTrace();
+}
+metric.endSpan("span2 name", new Date());		
+metric.end();
+
+metric.statusCode = response.getStatus();
+metric.contentType = response.getContentType();
+
+notifier.routes.notify(metric);
+```
+
+### Sending query stats
+
+`notifier.queries.notify` allows sending SQL query stats to Airbrake. You can also use this API manually:
+
+```java
+Date startTime = new Date();
+try
+{
+  do();
+}catch(
+Exception e)
+{
+  e.printStackTrace();
+}
+Date endTime = new Date();
+
+notifier.queries.notify(request.getMethod(),request.getRequestURI()
+,"SELECT * FROM foos",startTime,endTime);
+```
+
+### Sending queue stats
+
+`notifier.queues.notify` allows sending queue (job) stats to Airbrake. You can also use this API manually:
+
+```java
+import io.airbrake.javabrake.QueueMetric;
+
+QueueMetric metric = new QueueMetric("foo_queue");
+
+metric.startSpan("span1 name", new Date());
+try {
+    do();
+} catch (Exception e) {
+    e.printStackTrace();
+}
+metric.endSpan("span1 name", new Date());
+
+metric.startSpan("span2 name", new Date());
+try {
+  do();
+} catch (Exception e) {
+  e.printStackTrace();
+}
+metric.endSpan("span2 name", new Date());
+metric.end();
+
+notifier.queues.notify(metric);
+
+```
+
+For more information visit [docs](https://docs.airbrake.io/docs/platforms/java/)
 
 ## log4j2 integration
 
@@ -206,3 +332,6 @@ Upload to Maven Central:
 Usefull links:
  - http://central.sonatype.org/pages/gradle.html
  - http://central.sonatype.org/pages/releasing-the-deployment.html
+
+
+[docs/performance]: https://docs.airbrake.io/docs/overview/apm/#monitoring-java-apps

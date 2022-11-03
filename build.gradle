@@ -17,7 +17,7 @@ buildscript {
  apply plugin: 'io.codearte.nexus-staging'
 
 group = 'io.airbrake'
-version = '0.2.5'
+version = '0.3.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -35,10 +35,21 @@ repositories {
 
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.10'
+    // https://mvnrepository.com/artifact/com.tdunning/t-digest
+    implementation 'com.tdunning:t-digest:3.2'
     api 'com.google.code.findbugs:jsr305:3.0.2'
     testImplementation 'com.github.tomakehurst:wiremock:2.27.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    // https://mvnrepository.com/artifact/net.javacrumbs.json-unit/json-unit-assertj
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.35.0'
+
+
+}
+
+java{
+    withJavadocJar()
+    withSourcesJar()
 }
 
 test {
@@ -59,7 +70,7 @@ publishing {
 
             group = 'io.airbrake'
             artifactId = 'javabrake'
-            version = '0.2.5'
+            version = '0.3.0'
             description = 'javabrake'
             from(components.java) 
 
@@ -91,20 +102,10 @@ publishing {
         }
     }
     repositories{
-            // maven{
-           
-            //     name = 'OSSRH'
-            //     url = 'https://oss.sonatype.org/content/repositories/snapshots'
-            //     credentials {
-            //         username = project.properties["ossrhUsername"]
-            //         password = project.properties["ossrhPassword"]
-            // }
-            //}
         maven{
            
                 name = 'OSSRH'
                  url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-             //    url = 'https://oss.sonatype.org/content/repositories/snapshots'
                 credentials {
                     username = project.properties["ossrhUsername"]
                     password = project.properties["ossrhPassword"]
@@ -117,8 +118,4 @@ publishing {
 
 signing {
     sign publishing.publications.mavenJava
-}
-
-javadoc{
-    
 }

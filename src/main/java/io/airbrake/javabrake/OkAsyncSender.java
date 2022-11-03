@@ -8,8 +8,7 @@ import okhttp3.Response;
 
 public class OkAsyncSender extends OkSender implements AsyncSender {
   static final int queuedCallsLimit = 1000;
-  static final IOException queuedCallsLimitException =
-      new IOException("too many HTTP requests queued for execution");
+  static final IOException queuedCallsLimitException = new IOException("too many HTTP requests queued for execution");
 
   public OkAsyncSender(Config config) {
     super(config);
@@ -44,7 +43,7 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
 
     OkAsyncSender sender = this;
     okhttp
-        .newCall(this.buildRequest(notice))
+        .newCall(this.buildErrorRequest(notice))
         .enqueue(
             new Callback() {
               @Override
@@ -64,6 +63,30 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
                 }
               }
             });
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<Response> send(String body, String path) {
+    CompletableFuture<Response> future = new CompletableFuture<>();
+
+ okhttp
+    .newCall(this.buildAPMRequest(body,path))
+    .enqueue(
+        new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+
+            future.completeExceptionally(e);
+          }
+
+          @Override
+          public void onResponse(Call call, Response resp) {
+
+            future.complete(resp);
+
+          }
+        });
     return future;
   }
 }

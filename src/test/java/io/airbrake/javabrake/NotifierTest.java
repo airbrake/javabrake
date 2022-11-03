@@ -43,9 +43,6 @@ public class NotifierTest {
 
     NoticeStackFrame frame = err.backtrace[0];
     assertEquals("<init>", frame.function);
-  //  assertEquals("test/io/airbrake/javabrake/NotifierTest.class", frame.file);
-  //  assertEquals(17, frame.line);
-
     String hostname = (String) notice.context.get("hostname");
     assertTrue(hostname != "");
   }
@@ -85,7 +82,7 @@ public class NotifierTest {
 
   @Test
   public void testReportServerDown() {
-    NotifierTest.notifier.setHost("https://google.com");
+    NotifierTest.notifier.setErrorHost("https://google.com");
     Notice notice = NotifierTest.notifier.reportSync(this.exc);
     assertNotNull(notice.exception);
     assertEquals(
@@ -109,7 +106,7 @@ public class NotifierTest {
     
     String apiURL = "/api/v3/projects/0/notices";
 
-    notifier.setHost("http://localhost:8080");
+    notifier.setErrorHost("http://localhost:8080");
    // long utime = System.currentTimeMillis() / 1000L;
     stubFor(
         post(urlEqualTo(apiURL))
