@@ -70,23 +70,23 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   public CompletableFuture<Response> send(String body, String path) {
     CompletableFuture<Response> future = new CompletableFuture<>();
 
- okhttp
-    .newCall(this.buildAPMRequest(body,path))
-    .enqueue(
-        new Callback() {
-          @Override
-          public void onFailure(Call call, IOException e) {
+    okhttp
+        .newCall(this.buildAPMRequest(body, path))
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(Call call, IOException e) {
 
-            future.completeExceptionally(e);
-          }
+                future.completeExceptionally(e);
+              }
 
-          @Override
-          public void onResponse(Call call, Response resp) {
+              @Override
+              public void onResponse(Call call, Response resp) {
 
-            future.complete(resp);
+                future.complete(resp);
 
-          }
-        });
+              }
+            });
     return future;
   }
 }
