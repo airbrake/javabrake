@@ -15,7 +15,7 @@
 	<name>weather</name>
 	<description>Demo weather project using Airbrake with Spring Boot</description>
 	<properties>
-		<java.version>8</java.version>
+		<java.version>18</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
