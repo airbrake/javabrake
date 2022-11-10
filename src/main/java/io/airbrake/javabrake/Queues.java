@@ -64,7 +64,7 @@ class QueueStats extends TdigestStatGroup {
 }
 
 class QueueTimerTask extends TimerTask {
-    static Timer rTimer = new Timer();
+    static Timer rTimer = new Timer(true);
     private static boolean hasStarted = false;
 
     public static void start() {

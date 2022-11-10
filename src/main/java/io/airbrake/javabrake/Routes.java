@@ -97,7 +97,7 @@ class RouteBreakdowns extends TdigestStatGroup {
 }
 
 class RouteTimerTask extends TimerTask {
-    static Timer rTimer = new Timer();
+    static Timer rTimer = new Timer(true);
     static boolean hasStarted = false;
 
     public static void start() {
@@ -133,7 +133,7 @@ class RouteTimerTask extends TimerTask {
 }
 
 class RouteBreakDownTimerTask extends TimerTask {
-    static Timer brTimer = new Timer();
+    static Timer brTimer = new Timer(true);
     static boolean isStartedBreakdown = false;
 
     public static void start() {
