@@ -299,15 +299,15 @@ OkSender.setOkHttpClient(httpClient);
 ## Notifier release instrucitons
 
 ### A note on Java version
-Make sure you build and release this notifier with open-jdk-8, one way to manage your local java version is using [asdf](https://asdf-vm.com). You can install this tool via homebrew:
+Make sure you build and release this notifier with open-jdk, one way to manage your local java version is using [asdf](https://asdf-vm.com). You can install this tool via homebrew:
 ```
 brew install asdf
 ```
-Then install open-jdk-8 and set it as JAVA home before running any of the `./gradlew` commands:
+Then install open-jdk and set it as JAVA home before running any of the `./gradlew` commands:
 ```
 asdf plugin add java
-asdf install java adoptopenjdk-8.0.312+7
-export JAVA_HOME=$HOME/.asdf/installs/java/adoptopenjdk-8.0.312+7
+asdf install java adoptopenjdk-'mention version here'
+export JAVA_HOME=$HOME/.asdf/installs/java/adoptopenjdk-'mention version here'
 ```
 
 ### Build
@@ -316,16 +316,10 @@ export JAVA_HOME=$HOME/.asdf/installs/java/adoptopenjdk-8.0.312+7
 ./gradlew build
 ```
 
-Upload to JCentral:
-
-```shell
-./gradlew bintrayUpload
-```
-
 Upload to Maven Central:
 
 ```shell
-./gradlew uploadArchives
+./gradlew publish
 ./gradlew closeAndReleaseRepository
 ```
 
