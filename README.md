@@ -320,11 +320,9 @@ Upload to Maven Central:
 
 ```shell
 ./gradlew publish
-./gradlew closeAndReleaseRepository
 ```
 
-Usefull links:
- - http://central.sonatype.org/pages/gradle.html
+To release the deployment to maven central repository:
  - http://central.sonatype.org/pages/releasing-the-deployment.html
 
 
