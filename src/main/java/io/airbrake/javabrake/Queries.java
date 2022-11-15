@@ -8,7 +8,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
-import okhttp3.Response;
 
 public class Queries {
     String environment;
@@ -126,15 +125,15 @@ class QueryTimerTask extends TimerTask {
         if (Notifier.queryList.size() > 0) {
             Queries queries = new Queries(Notifier.config.environment, Notifier.queryList);
             Notifier.queryList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queries),
+            CompletableFuture<ApmResponse> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queries),
                     Constant.apmQuery);
 
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
                             Queries.status = exception.getMessage();
-                        } else if (!value.isSuccessful()) {
-                            Queries.status = value.message();
+                        } else if (value!= null) {
+                            Queries.status = value.message;
                         }
                     });
         }

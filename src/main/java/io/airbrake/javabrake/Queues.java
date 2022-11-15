@@ -7,8 +7,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 
-import okhttp3.Response;
-
 public class Queues {
 
     String environment;
@@ -83,13 +81,16 @@ class QueueTimerTask extends TimerTask {
 
             Queues queues = new Queues(Notifier.config.environment, Notifier.queueList);
             Notifier.queueList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queues),
+            CompletableFuture<ApmResponse> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(queues),
                     Constant.apmQueue);
 
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
                             Queues.status = exception.getMessage();
+                        }
+                        else if (value!= null) {
+                            Queues.status = value.message;
                         }
                     });
         }

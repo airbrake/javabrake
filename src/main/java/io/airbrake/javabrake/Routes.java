@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
-import okhttp3.Response;
 
 public class Routes {
     String environment;
@@ -114,14 +113,14 @@ class RouteTimerTask extends TimerTask {
         if (Notifier.routeList.size() > 0) {
             Routes routes = new Routes(Notifier.config.environment, Notifier.routeList);
             Notifier.routeList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),
+            CompletableFuture<ApmResponse> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),
                     Constant.apmRoute);
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
                             Routes.status = exception.getMessage();
-                        } else if (!value.isSuccessful()) {
-                            Routes.status = value.message();
+                        }  else if (value!= null) {
+                            Routes.status = value.message;
                         }
                     });
         }
@@ -150,15 +149,15 @@ class RouteBreakDownTimerTask extends TimerTask {
         if (Notifier.routesBreakdownList.size() > 0) {
             Routes routes = new Routes(Notifier.config.environment, Notifier.routesBreakdownList);
             Notifier.routesBreakdownList = new ArrayList<>();
-            CompletableFuture<Response> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),
+            CompletableFuture<ApmResponse> future = new OkAsyncSender(Notifier.config).send(OkSender.gson.toJson(routes),
                     Constant.apmRouteBreakDown);
 
             future.whenComplete(
                     (value, exception) -> {
                         if (exception != null) {
                             Routes.status = exception.getMessage();
-                        } else if (!value.isSuccessful()) {
-                            Routes.status = value.message();
+                        }else if (value!= null) {
+                            Routes.status = value.message;
                         }
                     });
         }

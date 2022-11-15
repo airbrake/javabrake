@@ -130,11 +130,14 @@ public class QueuesTest {
 
       try {
         res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
+        resp.body().close();
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+      
       assertEquals(res.get("message"), "Success");
+      resp.close();
     } catch (IOException e) {
     }
   }
