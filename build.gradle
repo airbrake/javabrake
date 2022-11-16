@@ -43,8 +43,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     // https://mvnrepository.com/artifact/net.javacrumbs.json-unit/json-unit-assertj
     testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.35.0'
-
-
 }
 
 java{

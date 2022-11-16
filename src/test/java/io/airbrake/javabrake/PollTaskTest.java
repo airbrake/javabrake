@@ -96,7 +96,7 @@ public class PollTaskTest {
         + NOTIFIER_INFO.get("notifier_name");
 
     stubFor(get(urlEqualTo(url)).withQueryParam("os", containing("a")).withQueryParam("language", containing("a"))
-        .withQueryParam("notifier_version", containing("0.2")).withQueryParam("notifier_name", containing("a"))
+        .withQueryParam("notifier_version", containing("0.3")).withQueryParam("notifier_name", containing("a"))
         .willReturn(aResponse()
             .withStatus(200).withBody(
                 "{\"project_id\":413949,\"updated_at\":1650979936,\"poll_sec\":0,\"config_route\":\"2020-06-18/config/413949/config.json\",\"settings\":[{\"name\":\"errors\",\"enabled\":true,\"endpoint\":\"test.io\"},{\"name\":\"apm\",\"enabled\":true,\"endpoint\":null}]}")));

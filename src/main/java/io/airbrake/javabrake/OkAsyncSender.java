@@ -2,9 +2,12 @@ package io.airbrake.javabrake;
 
 import java.util.concurrent.CompletableFuture;
 import java.io.IOException;
+import java.io.Reader;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class OkAsyncSender extends OkSender implements AsyncSender {
   static final int queuedCallsLimit = 1000;
@@ -67,26 +70,32 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
   }
 
   @Override
-  public CompletableFuture<Response> send(String body, String path) {
-    CompletableFuture<Response> future = new CompletableFuture<>();
+  public CompletableFuture<ApmResponse> send(String body, String path) {
+    CompletableFuture<ApmResponse> future = new CompletableFuture<>();
 
- okhttp
-    .newCall(this.buildAPMRequest(body,path))
-    .enqueue(
-        new Callback() {
-          @Override
-          public void onFailure(Call call, IOException e) {
+    okhttp
+        .newCall(this.buildAPMRequest(body, path))
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(Call call, IOException e) {
 
-            future.completeExceptionally(e);
-          }
+                future.completeExceptionally(e);
+              }
 
-          @Override
-          public void onResponse(Call call, Response resp) {
-
-            future.complete(resp);
-
-          }
-        });
+              @Override
+              public void onResponse(Call call, Response resp) {
+                ApmResponse apmResponse = null;
+                if (resp != null) {
+                  apmResponse = new ApmResponse();
+                  apmResponse.message = resp.message();
+                  apmResponse.code = resp.code();
+                  resp.close();
+                }
+                
+                future.complete(apmResponse);
+              }
+            });
     return future;
   }
 }

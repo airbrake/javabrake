@@ -27,7 +27,7 @@ class RemoteSettings {
     this.asyncSender = asyncSender;
     this.syncSender = syncSender;
 
-    this.timer = new Timer();
+    this.timer = new Timer(true);
   }
 
   public void poll() {

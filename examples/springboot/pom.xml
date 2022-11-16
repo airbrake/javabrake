@@ -15,16 +15,9 @@
 	<name>weather</name>
 	<description>Demo weather project using Airbrake with Spring Boot</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>18</java.version>
 	</properties>
 	<dependencies>
-
-		<dependency>
-			<groupId>io.airbrake</groupId>
-			<artifactId>javabrake</artifactId>
-			<version>0.2.4</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -36,15 +29,20 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.airbrake</groupId>
+			<artifactId>javabrake</artifactId>
+			<version>0.3.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 			 <exclusions>
-    <exclusion>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </exclusion>
-  </exclusions>
+   				 <exclusion>
+      				<groupId>junit</groupId>
+      				<artifactId>junit</artifactId>
+    			 </exclusion>
+  			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -56,5 +54,13 @@
 			</plugin>
 		</plugins>
 	</build>
-
+<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>4.9.2</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

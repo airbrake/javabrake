@@ -18,7 +18,6 @@ import net.minidev.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Response;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 
 @TestMethodOrder(OrderAnnotation.class)
 public class RouteTest {
@@ -142,14 +141,17 @@ public class RouteTest {
     Call call = OkSender.okhttp.newCall(okSender.buildAPMRequest(routeJson, Constant.apmRoute));
     try (Response resp = call.execute()) {
       JSONObject res = null;
-
+  
       try {
         res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
+        resp.body().close();
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+      
       assertEquals(res.get("message"), "Success");
+      resp.close();
     } catch (IOException e) {
 
     }
@@ -192,11 +194,14 @@ public class RouteTest {
 
       try {
         res = OkSender.gson.fromJson(resp.body().string(), JSONObject.class);
+        resp.body().close();
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+      
       assertEquals(res.get("message"), "Success");
+      resp.close();
     } catch (IOException e) {
     }
   }
