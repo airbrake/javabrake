@@ -88,9 +88,12 @@ class QueueTimerTask extends TimerTask {
                     (value, exception) -> {
                         if (exception != null) {
                             Queues.status = exception.getMessage();
-                        }
-                        else if (value!= null) {
+                        } else if (value != null) {
                             Queues.status = value.message;
+
+                            if (Notifier.config.backlogEnabled && value!=null && Constant.getStatusCodeCriteriaForBacklog().contains(value.code)) {
+                                    BackLog.add(new PayLoad(OkSender.gson.toJson(queues), Constant.apmQueue,0));
+                            }
                         }
                     });
         }

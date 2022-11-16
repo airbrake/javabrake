@@ -6,8 +6,11 @@ import java.util.HashMap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 
+@TestClassOrder(org.junit.jupiter.api.ClassOrderer.OrderAnnotation.class)
 public class PollTaskTest {
 
   static WireMockServer wireMockServer = null;

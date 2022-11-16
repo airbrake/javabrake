@@ -60,26 +60,26 @@ public class OkSender {
    this.apmUrl = this.buildAPMUrl(host);
  }
 
-  Request buildErrorRequest(Notice notice) {
-    this.errorUrl = this.buildErrorUrl(config.errorHost);
-    String data = this.noticeJson(notice);
-    RequestBody body = RequestBody.create(data,JSONType);
-    return new Request.Builder()
-        .header("Authorization", "Bearer " + this.projectKey)
-        .url(this.errorUrl)
-        .post(body)
-        .build();
-  }
+ Request buildErrorRequest(Notice notice) {
+  this.errorUrl = this.buildErrorUrl(config.errorHost);
+  String data = this.noticeJson(notice);
+  RequestBody body = RequestBody.create(data,JSONType);
+  return new Request.Builder()
+      .header("Authorization", "Bearer " + this.projectKey)
+      .url(this.errorUrl)
+      .post(body)
+      .build();
+}
 
-  Request buildAPMRequest(String json,String method) {
-    this.apmUrl = this.buildAPMUrl(method);
-    RequestBody body = RequestBody.create(json,JSONType);
-    return new Request.Builder()
-        .header("Authorization", "Bearer " + this.projectKey)
-        .url(this.apmUrl)
-        .post(body)
-        .build();
-  }
+Request buildAPMRequest(String json,String method) {
+  this.apmUrl = this.buildAPMUrl(method);
+  RequestBody body = RequestBody.create(json,JSONType);
+  return new Request.Builder()
+      .header("Authorization", "Bearer " + this.projectKey)
+      .url(this.apmUrl)
+      .post(body)
+      .build();
+}
 
   String noticeJson(Notice notice) {
     String data = "";

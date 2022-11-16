@@ -1,31 +1,29 @@
 package io.airbrake.javabrake;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
 
 import java.io.IOException;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
-//import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
+@TestClassOrder(org.junit.jupiter.api.ClassOrderer.OrderAnnotation.class)
 public class NotifierTest {
-  //@Rule public WireMockRule wireMockRule = new WireMockRule();
+  // @Rule public WireMockRule wireMockRule = new WireMockRule();
   static WireMockServer wireMockServer = null;
   static Notifier notifier;
   Throwable exc = new IOException("hello from Java");
 
   @BeforeAll
   public static void init() {
-    wireMockServer = new WireMockServer(); //No-args constructor will start on port 8080, no HTTPS
+    wireMockServer = new WireMockServer(); // No-args constructor will start on port 8080, no HTTPS
     wireMockServer.start();
     Config config = new Config();
     config.remoteConfig = false;
@@ -71,12 +69,14 @@ public class NotifierTest {
 
   @Test
   public void testReportAsync() {
+
+    Notice notice;
     try {
-      NotifierTest.notifier.report(this.exc).get();
-      fail("expected an exception");
-    } catch (Throwable e) {
-      e = e.getCause();
-      assertEquals("java.io.IOException: unauthorized: project id or key are wrong", e.toString());
+      notice = NotifierTest.notifier.report(this.exc).get();
+      assertEquals("java.io.IOException: unauthorized: project id or key are wrong", notice.exception.toString());
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 
@@ -103,11 +103,11 @@ public class NotifierTest {
 
   @Test
   public void testRateLimit() {
-    
+
     String apiURL = "/api/v3/projects/0/notices";
 
     notifier.setErrorHost("http://localhost:8080");
-   // long utime = System.currentTimeMillis() / 1000L;
+    // long utime = System.currentTimeMillis() / 1000L;
     stubFor(
         post(urlEqualTo(apiURL))
             .willReturn(
@@ -127,9 +127,35 @@ public class NotifierTest {
 
   }
 
+  @Test
+  public void testNotifierBacklog() {
+
+    String apiURL = "/api/v3/projects/0/notices";
+
+    notifier.setErrorHost("http://localhost:8080");
+
+    stubFor(
+        post(urlEqualTo(apiURL))
+            .willReturn(
+                aResponse()
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{'message':'Error'}").withStatus(404)));
+
+    NoticeBackLog.start();
+    NoticeBackLog.noticeBackLogList.clear();
+    notifier.report(this.exc);
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    assertEquals(NoticeBackLog.noticeBackLogList.size(), 1);
+  }
+
   @AfterAll
-  public static void closeWireMockServer()
-  {
+  public static void closeWireMockServer() {
     wireMockServer.stop();
   }
 }
