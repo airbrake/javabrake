@@ -311,7 +311,10 @@ asdf install java adoptopenjdk-8.0.312+7
 export JAVA_HOME=$HOME/.asdf/installs/java/adoptopenjdk-8.0.312+7
 ```
 
-You can install other open-jdk-8+ version of java. For more info visit https://adoptopenjdk.net/.
+You can install other open-jdk-8+ version of java. 
+Useful links:
+- https://adoptium.net/temurin/releases/.
+- https://adoptopenjdk.net/installation.html
 
 ### Build
 
