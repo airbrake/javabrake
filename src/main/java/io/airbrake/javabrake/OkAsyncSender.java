@@ -93,7 +93,7 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
                   resp.close();
                 }
 
-                future.completeExceptionally(e);
+                future.complete(apmResponse);
               }
             });
     return future;
