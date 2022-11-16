@@ -95,6 +95,9 @@ class QueueTimerTask extends TimerTask {
                                     BackLog.add(new PayLoad(OkSender.gson.toJson(queues), Constant.apmQueue,0));
                             }
                         }
+                        else if (value!= null) {
+                            Queues.status = value.message;
+                        }
                     });
         }
     }

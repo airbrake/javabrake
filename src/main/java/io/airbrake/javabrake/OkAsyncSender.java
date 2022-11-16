@@ -2,9 +2,12 @@ package io.airbrake.javabrake;
 
 import java.util.concurrent.CompletableFuture;
 import java.io.IOException;
+import java.io.Reader;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class OkAsyncSender extends OkSender implements AsyncSender {
   static final int queuedCallsLimit = 1000;
@@ -77,7 +80,6 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
             new Callback() {
               @Override
               public void onFailure(Call call, IOException e) {
-
                 future.completeExceptionally(e);
               }
 
@@ -91,7 +93,7 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
                   resp.close();
                 }
 
-                future.complete(apmResponse);
+                future.completeExceptionally(e);
               }
             });
     return future;
