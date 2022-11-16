@@ -20,7 +20,7 @@ public class Routes {
         this.routes = routes;
     }
 
-    public Routes() {
+    Routes() {
     }
 
     public void notify(RouteMetric metrics) {

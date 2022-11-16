@@ -20,7 +20,7 @@ public class Queries {
         this.queries = queries;
     }
 
-    public Queries() {
+    Queries() {
     }
 
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
