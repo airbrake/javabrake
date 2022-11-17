@@ -279,10 +279,8 @@ javabrake uses [OkHttp](http://square.github.io/okhttp/) as an HTTP client. So i
 
 ```java
 import java.net.InetSocketAddress;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Proxy;
-
 import io.airbrake.javabrake.OkSender;
 
 Proxy proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("192.168.1.105", 8081);
@@ -299,6 +297,7 @@ OkSender.setOkHttpClient(httpClient);
 ## Notifier release instrucitons
 
 ### A note on Java version
+
 Make sure you build and release this notifier with open-jdk, one way to manage your local java version is using [asdf](https://asdf-vm.com). You can install this tool via homebrew:
 ```
 brew install asdf
