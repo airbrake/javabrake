@@ -56,7 +56,7 @@ public class OkAsyncSender extends OkSender implements AsyncSender {
               public void onResponse(Call call, Response resp) {
                 sender.parseResponse(resp, notice);
                 if (config.backlogEnabled && resp != null
-                    && Constant.getStatusCodeCriteriaForBacklog().contains(resp.code())) {
+                    && Constant.failureCodeList().contains(resp.code())) {
                   NoticeBackLog.add(new PayLoad(notice, "", 0));
                   resp.close();
                 }

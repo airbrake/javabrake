@@ -135,8 +135,8 @@ class QueryTimerTask extends TimerTask {
                         } else if (value != null) {
                             Queries.status = value.message;
 
-                            if (Notifier.config.backlogEnabled && value != null && Constant.getStatusCodeCriteriaForBacklog().contains(value.code)) {
-                                    BackLog.add(new PayLoad(OkSender.gson.toJson(queries), Constant.apmQuery, 0));
+                            if (Notifier.config.backlogEnabled && value != null && Constant.failureCodeList().contains(value.code)) {
+                                    APMBackLog.add(new PayLoad(OkSender.gson.toJson(queries), Constant.apmQuery, 0));
                             }
                         }
                     });

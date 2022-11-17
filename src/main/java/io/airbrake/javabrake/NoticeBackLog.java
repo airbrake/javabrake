@@ -39,7 +39,7 @@ public class NoticeBackLog extends TimerTask {
                 try (Response resp = call.execute()) {
                     if (resp != null) {
                         status = resp.message();
-                        if (Constant.getStatusCodeCriteriaForBacklog().contains(resp.code())) {
+                        if (Constant.failureCodeList().contains(resp.code())) {
                             NoticeBackLog.add(payLoad);
                         }
                     }

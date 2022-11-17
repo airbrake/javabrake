@@ -235,8 +235,8 @@ public class RouteTest {
             .willReturn(aResponse().withBody("{'message':'Error'}")
                 .withStatus(404)));
 
-    BackLog.start();
-    BackLog.apmBackLogList.clear();
+    APMBackLog.start();
+    APMBackLog.apmBackLogList.clear();
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {
@@ -293,7 +293,7 @@ public class RouteTest {
       e.printStackTrace();
     }
 
-    assertEquals(BackLog.apmBackLogList.size(), 3);
+    assertEquals(APMBackLog.apmBackLogList.size(), 3);
   }
 
   @AfterAll

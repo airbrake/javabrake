@@ -24,7 +24,7 @@ public class OkSyncSender extends OkSender implements SyncSender {
     Call call = okhttp.newCall(this.buildErrorRequest(notice));
     try (Response resp = call.execute()) {
       this.parseResponse(resp, notice);
-      if (config.backlogEnabled && resp!=null && Constant.getStatusCodeCriteriaForBacklog().contains(resp.code())) {
+      if (config.backlogEnabled && resp!=null && Constant.failureCodeList().contains(resp.code())) {
         NoticeBackLog.add(new PayLoad(notice, "", 0));
       }
     } catch (IOException e) {

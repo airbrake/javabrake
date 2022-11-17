@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class BackLog extends TimerTask {
+public class APMBackLog extends TimerTask {
     static Timer rTimer = new Timer(true);
     static boolean hasStarted = false;
     static String status = "";
@@ -17,7 +17,7 @@ public class BackLog extends TimerTask {
 
         if (!hasStarted) {
             hasStarted = true;
-            rTimer.schedule(new BackLog(), 0, Constant.BACKLOG_FLUSH_PERIOD * 1000);
+            rTimer.schedule(new APMBackLog(), 0, Constant.BACKLOG_FLUSH_PERIOD * 1000);
         }
     }
 
@@ -27,9 +27,9 @@ public class BackLog extends TimerTask {
         // pop out queue items every 1 sec
         // Ignoring empty queue
         if (Notifier.config.backlogEnabled) {
-            while (BackLog.apmBackLogList.size() > 0) {
+            while (APMBackLog.apmBackLogList.size() > 0) {
                 status = "";
-                PayLoad payLoad = BackLog.apmBackLogList.poll();
+                PayLoad payLoad = APMBackLog.apmBackLogList.poll();
                 payLoad.retryCount += 1;
 
                 Call call = OkSender.okhttp.newCall(new OkAsyncSender(Notifier.config)
@@ -37,8 +37,8 @@ public class BackLog extends TimerTask {
                 try (Response resp = call.execute()) {
                     if (resp != null) {
                         status = resp.message();
-                        if (Constant.getStatusCodeCriteriaForBacklog().contains(resp.code())) {
-                            BackLog.add(payLoad);
+                        if (Constant.failureCodeList().contains(resp.code())) {
+                            APMBackLog.add(payLoad);
                         }
                     }
                 } catch (IOException e) {
@@ -63,8 +63,8 @@ public class BackLog extends TimerTask {
 
     protected static void add(PayLoad object) {
         start();
-        if (BackLog.apmBackLogList.size() != Notifier.config.maxBacklogSize) {
-            BackLog.apmBackLogList.add(object);
+        if (APMBackLog.apmBackLogList.size() != Notifier.config.maxBacklogSize) {
+            APMBackLog.apmBackLogList.add(object);
         }
     }
 }
