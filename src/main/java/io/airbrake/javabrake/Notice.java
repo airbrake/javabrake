@@ -29,7 +29,7 @@ public class Notice {
   /** Exception occurred reporting this Notice. */
   public transient Throwable exception;
   protected transient Response response;
-
+  
   public List<NoticeError> errors;
   @Nullable
   public Map<String, Object> context;
