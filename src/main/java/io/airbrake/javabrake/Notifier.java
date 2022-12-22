@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 //** Airbrake notifier. */
-public class Notifier{
+public class Notifier {
   AsyncSender asyncSender;
   SyncSender syncSender;
 
   protected static List<Object> routeList = new ArrayList<>();
   protected static List<Object> routesBreakdownList = new ArrayList<>();
   protected static List<Object> queueList = new ArrayList<>();
-	protected static List<Object> queryList = new ArrayList<>();
+  protected static List<Object> queryList = new ArrayList<>();
 
   public Routes routes;
   public Queries queries;
@@ -29,7 +29,7 @@ public class Notifier{
   /**
    * @param config Configures the notifier
    */
-   public Notifier(Config config) {
+  public Notifier(Config config) {
     Notifier.config = config;
 
     this.asyncSender = new OkAsyncSender(config);
@@ -38,7 +38,7 @@ public class Notifier{
     routes = new Routes();
     queries = new Queries();
     queues = new Queues();
-  
+
     if (config.errorHost != null) {
       this.setErrorHost(config.errorHost);
     }
@@ -105,7 +105,7 @@ public class Notifier{
   /** Asynchronously sends a Notice to Airbrake. */
   public Future<Notice> send(Notice notice) {
     notice = this.filterNotice(notice);
- 
+
     CompletableFuture<Notice> future = this.asyncSender.send(notice);
 
     final Notice finalNotice = notice;
@@ -155,5 +155,10 @@ public class Notifier{
   /** Builds a Notice from an exception. */
   public Notice buildNotice(Throwable e) {
     return new Notice(e);
+  }
+
+  /** Get NoticeBuilder from an exception. */
+  public NoticeBuilder Builder(Throwable e) {
+    return new NoticeBuilder(e);
   }
 }

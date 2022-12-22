@@ -23,16 +23,22 @@ public class Notice {
   public String id;
   public String url;
   /** Marked transient so gson will ignore this field during serialization **/
-  /** https://github.com/google/gson/blob/master/UserGuide.md#java-modifier-exclusion **/
+  /**
+   * https://github.com/google/gson/blob/master/UserGuide.md#java-modifier-exclusion
+   **/
   /** Exception occurred reporting this Notice. */
   public transient Throwable exception;
   protected transient Response response;
-  
+
   public List<NoticeError> errors;
-  @Nullable public Map<String, Object> context;
-  @Nullable public Map<String, Object> params;
-  @Nullable public Map<String, Object> session;
-  @Nullable public Map<String, Object> environment;
+  @Nullable
+  public Map<String, Object> context;
+  @Nullable
+  public Map<String, Object> params;
+  @Nullable
+  public Map<String, Object> session;
+  @Nullable
+  public Map<String, Object> environment;
 
   public Notice() {
     this.setContext("notifier", notifierInfo);
@@ -47,6 +53,23 @@ public class Notice {
       this.setContext("hostname", hostname);
     } catch (UnknownHostException ex) {
     }
+  }
+
+  public Notice(NoticeBuilder noticeBuilder) {
+    this();
+    if (noticeBuilder.exception != null) {
+      this.errors = new ArrayList<>();
+      while (noticeBuilder.exception != null) {
+        this.errors.add(new NoticeError(noticeBuilder.exception));
+        noticeBuilder.exception = noticeBuilder.exception.getCause();
+      }
+    } else
+      this.errors = noticeBuilder.errors;
+
+    this.context = noticeBuilder.context;
+    this.params = noticeBuilder.params;
+    this.session = noticeBuilder.session;
+    this.environment = noticeBuilder.environment;
   }
 
   public Notice(List<NoticeError> errors) {
