@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import okhttp3.Response;
+
 public class Notice {
   public static final HashMap<String, String> notifierInfo;
 
@@ -24,7 +26,8 @@ public class Notice {
   /** https://github.com/google/gson/blob/master/UserGuide.md#java-modifier-exclusion **/
   /** Exception occurred reporting this Notice. */
   public transient Throwable exception;
-
+  protected transient Response response;
+  
   public List<NoticeError> errors;
   @Nullable public Map<String, Object> context;
   @Nullable public Map<String, Object> params;

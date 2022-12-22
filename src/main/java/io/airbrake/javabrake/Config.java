@@ -13,4 +13,6 @@ public class Config {
   public boolean performanceStats = true;
   public boolean queryStats = true;
   public boolean queueStats = true;
+  public boolean backlogEnabled = true;
+  public int maxBacklogSize = 100;
 }

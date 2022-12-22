@@ -21,15 +21,13 @@ public class OkSender {
   static final MediaType JSONType = MediaType.parse("application/json");
 
   static final Gson gson = new GsonBuilder().create();
-  static OkHttpClient okhttp =
-      new OkHttpClient.Builder()
-          .connectTimeout(3000, TimeUnit.MILLISECONDS)
-          .readTimeout(3000, TimeUnit.MILLISECONDS)
-          .writeTimeout(3000, TimeUnit.MILLISECONDS)
-          .build();
+  static OkHttpClient okhttp = new OkHttpClient.Builder()
+      .connectTimeout(3000, TimeUnit.MILLISECONDS)
+      .readTimeout(3000, TimeUnit.MILLISECONDS)
+      .writeTimeout(3000, TimeUnit.MILLISECONDS)
+      .build();
 
-  static final IOException ipUnauthorizedException =
-      new IOException("unauthorized: project id or key are wrong");
+  static final IOException ipUnauthorizedException = new IOException("unauthorized: project id or key are wrong");
   static final IOException ipRateLimitedException = new IOException("IP is rate limited");
 
   final Config config;
@@ -57,13 +55,13 @@ public class OkSender {
   }
 
   public void setAPMHost(String host) {
-   this.apmUrl = this.buildAPMUrl(host);
- }
+    this.apmUrl = this.buildAPMUrl(host);
+  }
 
   Request buildErrorRequest(Notice notice) {
     this.errorUrl = this.buildErrorUrl(config.errorHost);
     String data = this.noticeJson(notice);
-    RequestBody body = RequestBody.create(data,JSONType);
+    RequestBody body = RequestBody.create(data, JSONType);
     return new Request.Builder()
         .header("Authorization", "Bearer " + this.projectKey)
         .url(this.errorUrl)
@@ -71,9 +69,9 @@ public class OkSender {
         .build();
   }
 
-  Request buildAPMRequest(String json,String method) {
+  Request buildAPMRequest(String json, String method) {
     this.apmUrl = this.buildAPMUrl(method);
-    RequestBody body = RequestBody.create(json,JSONType);
+    RequestBody body = RequestBody.create(json, JSONType);
     return new Request.Builder()
         .header("Authorization", "Bearer " + this.projectKey)
         .url(this.apmUrl)
@@ -125,30 +123,28 @@ public class OkSender {
       notice.exception = ipUnauthorizedException;
       return;
     }
-
-    if (resp.code() == 429) {
-      notice.exception = ipRateLimitedException;
-
-      String header = resp.header("X-RateLimit-Delay");
-      if (header == null) {
-        return;
-      }
-
-      long n = 0;
-      try {
-        n = Long.parseLong(header);
-      } catch (NumberFormatException e) {
-      }
-      if (n > 0) {
-        this.rateLimitReset.set(System.currentTimeMillis() / 1000L + n);
-      }
-      return;
-    }
-
+    
     if (resp.code() >= 400 && resp.code() < 500) {
       try {
         NoticeCode data = this.parseJson(resp, NoticeCode.class);
         notice.exception = new IOException(data.message);
+
+        if (resp.code() == 429 && data.message.contains("Too many requests from your IP address")) {
+          String header = resp.header("X-RateLimit-Delay");
+          if (header == null) {
+            return;
+          }
+
+          long n = 0;
+          try {
+            n = Long.parseLong(header);
+          } catch (NumberFormatException e) {
+          }
+          if (n > 0) {
+            this.rateLimitReset.set(System.currentTimeMillis() / 1000L + n);
+          }
+          return;
+        }
       } catch (JsonParseException e) {
         notice.exception = e;
       }

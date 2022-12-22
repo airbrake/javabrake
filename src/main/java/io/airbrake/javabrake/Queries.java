@@ -20,7 +20,7 @@ public class Queries {
         this.queries = queries;
     }
 
-    public Queries() {
+    Queries() {
     }
 
     public void notify(@NotNull String method, @NotNull String route, @NotNull String query, @NotNull Date startTime,
@@ -132,8 +132,12 @@ class QueryTimerTask extends TimerTask {
                     (value, exception) -> {
                         if (exception != null) {
                             Queries.status = exception.getMessage();
-                        } else if (value!= null) {
+                        } else if (value != null) {
                             Queries.status = value.message;
+
+                            if (Notifier.config.backlogEnabled && value != null && Constant.failureCodeList().contains(value.code)) {
+                                    APMBackLog.add(new PayLoad(OkSender.gson.toJson(queries), Constant.apmQuery, 0));
+                            }
                         }
                     });
         }

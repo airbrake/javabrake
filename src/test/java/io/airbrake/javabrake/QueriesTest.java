@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import java.io.IOException;
@@ -19,8 +20,8 @@ import okhttp3.Call;
 import okhttp3.Response;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
-
 @TestMethodOrder(OrderAnnotation.class)
+@TestClassOrder(org.junit.jupiter.api.ClassOrderer.OrderAnnotation.class)
 public class QueriesTest {
 
   static WireMockServer wireMockServer = null;
@@ -110,13 +111,13 @@ public class QueriesTest {
 
     Queries queries = new Queries(config.environment, list);
 
-    String json = "{\"environment\":\"${json-unit.any-string}\",\"queries\":[{\"method\":\"${json-unit.any-string}\",\"route\":\"${json-unit.any-string}\","+
-    "\"query\":\"${json-unit.any-string}\","+
-    "\"time\":\"${json-unit.any-string}\",\"line\":\"${json-unit.any-number}\",\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\","+
-    "\"sumsq\":\"${json-unit.any-number}\",\"tdigest\":\"${json-unit.any-string}\"}]}";
+    String json = "{\"environment\":\"${json-unit.any-string}\",\"queries\":[{\"method\":\"${json-unit.any-string}\",\"route\":\"${json-unit.any-string}\","
+        +"\"query\":\"${json-unit.any-string}\","
+        +"\"time\":\"${json-unit.any-string}\",\"line\":\"${json-unit.any-number}\",\"count\":\"${json-unit.any-number}\",\"sum\":\"${json-unit.any-number}\","
+        +"\"sumsq\":\"${json-unit.any-number}\",\"tdigest\":\"${json-unit.any-string}\"}]}";
 
     String queriesJson = OkSender.gson.toJson(queries);
-    
+
     assertThatJson(queriesJson).isEqualTo(json);
 
     stubFor(post(urlEqualTo("/api/v5/projects/1/queries-stats")).withHeader("Authorization", containing("Bearer "))
@@ -143,6 +144,39 @@ public class QueriesTest {
     } catch (IOException e) {
 
     }
+  }
+
+  @Test
+  @Order(5)
+  public void testQueryBacklog() {
+
+    config.performanceStats = true;
+    config.projectId = 1;
+    String apiURL = "/api/v5/projects/1/queries-stats";
+
+    notifier.setAPMHost("http://localhost:8080");
+
+    stubFor(
+        post(urlEqualTo(apiURL)).withHeader("Authorization", containing("Bearer "))
+            .willReturn(aResponse().withBody("{'message':'Error'}")
+                .withStatus(404)));
+
+    APMBackLog.start();
+    APMBackLog.apmBackLogList.clear();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    notifier.queries.notify(this.method, this.route, this.query, this.startTime, this.endTime, null, null, 0);
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
   }
 
   @AfterAll

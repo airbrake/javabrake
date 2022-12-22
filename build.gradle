@@ -75,7 +75,7 @@ publishing {
 
             pom{
                 name = 'javabrake'
-                url = 'https://github.com/airbrake/javabrake'
+                url = 'https://airbrake.io'
                 description = 'javabrake'           
             licenses {
                 license {
