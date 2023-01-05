@@ -158,7 +158,7 @@ public class Notifier {
   }
 
   /** Get NoticeBuilder from an exception. */
-  public NoticeBuilder Builder(Throwable e) {
+  public NoticeBuilder noticeBuilder(Throwable e) {
     return new NoticeBuilder(e);
   }
 }

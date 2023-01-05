@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.airbrake.javabrake.Constant.NoticeContext;
+
 public class NoticeBuilder {
   Map<String, Object> context;
   Map<String, Object> params;
@@ -24,7 +26,7 @@ public class NoticeBuilder {
     if (this.environment == null) {
       this.environment = new HashMap<>();
     }
-    this.environment.put("environment", value);
+    this.environment.put(NoticeContext.environment.name(), value);
     return this;
   }
 
@@ -32,7 +34,7 @@ public class NoticeBuilder {
     if (this.context == null) {
       this.context = new HashMap<>();
     }
-    this.context.put("component", value);
+    this.context.put(NoticeContext.component.name(), value);
     return this;
   }
 
@@ -40,7 +42,7 @@ public class NoticeBuilder {
     if (this.context == null) {
       this.context = new HashMap<>();
     }
-    this.context.put("severity", value);
+    this.context.put(NoticeContext.severity.name(), value);
     return this;
   }
 
@@ -48,7 +50,7 @@ public class NoticeBuilder {
     if (this.session == null) {
       this.session = new HashMap<>();
     }
-    this.session.put("session", value);
+    this.session.put(NoticeContext.session.name(), value);
     return this;
   }
 
@@ -57,6 +59,14 @@ public class NoticeBuilder {
       this.context = new HashMap<>();
     }
     this.context.put(key, value);
+    return this;
+  }
+
+  public NoticeBuilder context(NoticeContext key, Object value) {
+    if (this.context == null) {
+      this.context = new HashMap<>();
+    }
+    this.context.put(key.name(), value);
     return this;
   }
 

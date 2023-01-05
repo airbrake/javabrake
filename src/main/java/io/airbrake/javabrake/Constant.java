@@ -20,4 +20,11 @@ public class Constant {
         return statusCodeCriteriaForBacklog;
     }
 
+    enum NoticeContext {
+        environment,
+        component,
+        severity,
+        session
+      }
+
 }
